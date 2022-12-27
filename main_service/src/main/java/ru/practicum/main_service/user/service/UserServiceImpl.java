@@ -3,9 +3,7 @@ package ru.practicum.main_service.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.exception.NotFoundObjectException;
@@ -13,7 +11,6 @@ import ru.practicum.main_service.user.dao.UserStorage;
 import ru.practicum.main_service.user.dto.UserDto;
 import ru.practicum.main_service.user.mapper.UserMapper;
 import ru.practicum.main_service.user.model.User;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -38,8 +35,9 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toUser(userDto);
         return UserMapper.toDto(storage.save(user));
     }
+
     @Override
-    public List<UserDto> getAll(List <Long> ids, int from, int size) {
+    public List<UserDto> getAll(List<Long> ids, int from, int size) {
         int page = from / size;
         final Pageable pageable = PageRequest.of(page, size);
         return storage.findAllByIdIn(ids, pageable).stream()

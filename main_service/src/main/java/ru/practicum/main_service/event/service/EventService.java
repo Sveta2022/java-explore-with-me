@@ -1,6 +1,5 @@
 package ru.practicum.main_service.event.service;
 
-import java.util.List;
 
 public class EventService {
 
