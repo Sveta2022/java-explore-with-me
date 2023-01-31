@@ -1,4 +1,4 @@
-package ru.practicum.main_service.requests;
+package ru.practicum.main_service.requests.model;
 
 import lombok.*;
 import ru.practicum.main_service.event.model.Event;
@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Builder
 @ToString
 @Entity
 @Table(name = "requests")
-public class RequestEvent {
+public class ParticipationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

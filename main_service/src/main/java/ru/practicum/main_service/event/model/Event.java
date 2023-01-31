@@ -1,6 +1,7 @@
 package ru.practicum.main_service.event.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.user.model.Location;
@@ -25,20 +26,20 @@ public class Event {
     private Long id;
 
     @Column(name = "title")
-    private String title;
+    private String title;  // Заголовок
 
     @Column(name = "annotation")
-    private String annotation;
+    private String annotation;  //Краткое описание
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private CategoryEvent category;
+    private CategoryEvent category;  //Категория
 
     @Column(name = "description")
-    private String description;
+    private String description;  //Полное описание события
 
     @Column(name = "event_date")
-    private LocalDateTime eventDate;
+    private LocalDateTime eventDate; // Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
 
     @Embedded
     @AttributeOverrides({
@@ -48,30 +49,30 @@ public class Event {
     private Location location;
 
     @Column(name = "paid")
-    private boolean paid;
+    private boolean paid;  //Нужно ли оплачивать участие
 
-    @Column(name = "participantLimit")
-    private int participantLimit;
+    @Column(name = "participant_limit")
+    private int participantLimit;  //Ограничение на количество участников. Значение 0 - означает отсутствие ограничения
 
     @Column(name = "created_on")
-    private LocalDateTime createdOn;
+    private LocalDateTime createdOn;  //Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")
 
     @ManyToOne
     @JoinColumn(name = "initiator_id")
-    private User initiator;
+    private User initiator;  //тот, кто создал событие
 
     @Column(name = "published_on")
-    private LocalDateTime publishedOn;
+    private LocalDateTime publishedOn;  //Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss")
 
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private boolean requestModeration; //ужна ли пре-модерация заявок на участие
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    private StateEvent stateEvent;
+    private StateEvent stateEvent;  //Список состояний жизненного цикла события
 
-    @Column(name = "view")
-    private Long views;
+    @Column(name = "views")
+    private Long views = 0L;  //Количество просмотрев события
 
 
 }

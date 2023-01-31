@@ -1,6 +1,10 @@
 package ru.practicum.main_service.event.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public enum StateEvent {
     PENDING,
@@ -15,5 +19,4 @@ public enum StateEvent {
         }
         return Optional.empty();
     }
-
 }

@@ -1,6 +1,7 @@
 package ru.practicum.main_service.user.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Embeddable;
 
@@ -8,7 +9,7 @@ import javax.persistence.Embeddable;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Builder
 @ToString
 @Embeddable

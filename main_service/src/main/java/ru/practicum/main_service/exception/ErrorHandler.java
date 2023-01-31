@@ -5,43 +5,84 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.main_service.user.controller.admin.AdminUserController;
+import ru.practicum.main_service.category.controller.AdminCategoryController;
+import ru.practicum.main_service.category.controller.PublicCategoryController;
+import ru.practicum.main_service.event.controller.AdminEventController;
+import ru.practicum.main_service.event.controller.PrivateEventController;
+import ru.practicum.main_service.event.controller.PublicEventController;
+import ru.practicum.main_service.requests.controller.RequestController;
+import ru.practicum.main_service.user.controller.AdminUserController;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-@RestControllerAdvice(assignableTypes = {AdminUserController.class})
+@RestControllerAdvice(assignableTypes = {AdminUserController.class, AdminEventController.class,
+        PrivateEventController.class, PublicEventController.class, AdminCategoryController.class,
+PublicCategoryController.class, RequestController.class})
 @Slf4j
 public class ErrorHandler {
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleValidation(final ValidationException v) {
-        log.warn("400 {}", v.getMessage(), v);
-        return new ResponseEntity<>(
-                Map.of("error", v.getMessage()),
-                HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiError> handleValidation(final ValidationException v) {
+        log.error("400 {}", v.getMessage(), v);
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .errors(List.of(v.getClass().getName()))
+                .message(v.getLocalizedMessage())
+                .reason("For the requested operation the conditions are not met.")
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+
+
+//        return new ResponseEntity<>(
+//                Map.of("error", v.getMessage()),
+//                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleNotFound(final NotFoundObjectException n) {
-        log.warn("404 {}", n.getMessage(), n);
-        return new ResponseEntity<>(
-                Map.of("error", n.getMessage()),
-                HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiError> handleNotFound(final NotFoundObjectException n) {
+        log.error("404 {}", n.getMessage(), n);
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .errors(List.of(n.getClass().getName()))
+                .message(n.getLocalizedMessage())
+                .reason("The required object was found.")
+                .status(HttpStatus.NOT_FOUND)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+
+
+//        return new ResponseEntity<>(
+//                Map.of("error", n.getMessage()),
+//                HttpStatus.NOT_FOUND);
     }
 
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleAllIlligal(final IllegalArgumentException nL) {
-        log.warn("500 {}", nL.getMessage(), nL);
-        return new ResponseEntity<>(
-                Map.of("error", nL.getMessage()),
+    public ResponseEntity<ApiError> handleAllIlligal(final IllegalArgumentException nL) {
+        log.error("500 {}", nL.getMessage(), nL);
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .errors(List.of(nL.getClass().getName()))
+                .message(nL.getLocalizedMessage())
+                .reason("Error occurred")
+                .status(HttpStatus.NOT_FOUND)
+                .build();
+        return new ResponseEntity<>(apiError,
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleConflict(final ConflictException cL) {
-        log.warn("409 {}", cL.getMessage(), cL);
-        return new ResponseEntity<>(
-                Map.of("error", cL.getMessage()),
+    public ResponseEntity<ApiError> handleConflict(final ConflictException cL) {
+        log.error("409 {}", cL.getMessage(), cL);
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .errors(List.of(cL.getClass().getName()))
+                .message(cL.getLocalizedMessage())
+                .reason("Integrity constraint has been violated")
+                .status(HttpStatus.NOT_FOUND)
+                .build();
+
+        return new ResponseEntity<>(apiError,
                 HttpStatus.CONFLICT);
     }
 }

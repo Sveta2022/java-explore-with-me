@@ -1,10 +1,12 @@
-package ru.practicum.main_service.user.controller.admin;
+package ru.practicum.main_service.user.controller;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main_service.exception.Create;
 import ru.practicum.main_service.user.dto.UserDto;
 import ru.practicum.main_service.user.service.UserService;
 
@@ -27,7 +29,7 @@ public class AdminUserController {
 
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto userDto) {
+    public UserDto create(@Validated({Create.class}) @RequestBody UserDto userDto) {
         log.info("Запрос на добавление пользователя " + userDto.getName() + " id " + userDto.getId() + " создан");
         return service.create(userDto);
     }
@@ -39,12 +41,6 @@ public class AdminUserController {
         log.info("Запрос получить всех пользователей создан");
         return service.getAll(ids, from, size);
     }
-
-//    @GetMapping("/{id}")
-//    public UserDto getById(@PathVariable Long id) {
-//        log.info("Запрос на получение пользователя по id " + id + " создан");
-//        return service.getById(id);
-//    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

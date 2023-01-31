@@ -3,9 +3,11 @@ package ru.practicum.main_service.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
 import ru.practicum.main_service.user.dao.UserStorage;
 import ru.practicum.main_service.user.dto.UserDto;
@@ -13,6 +15,7 @@ import ru.practicum.main_service.user.mapper.UserMapper;
 import ru.practicum.main_service.user.model.User;
 import org.springframework.data.domain.Pageable;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +36,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        return UserMapper.toDto(storage.save(user));
+        try {
+            storage.save(user);
+            return UserMapper.toDto(user);
+        } catch (DataIntegrityViolationException sql) {
+            throw new ConflictException("Запрос приводит к нарушению целостности данных");
+        }
     }
 
     @Override
