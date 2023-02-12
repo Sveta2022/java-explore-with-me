@@ -1,11 +1,9 @@
 package ru.practicum.main_service.event.dto;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.validation.constraints.*;
-import java.time.LocalDateTime;
+
 
 @Getter
 @Setter

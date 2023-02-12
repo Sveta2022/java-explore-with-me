@@ -16,18 +16,20 @@ import java.util.List;
 @RequestMapping(path = "/users/{userId}/requests")
 public class RequestController {
 
-   private RequestService requestService;
+    private RequestService requestService;
 
-   @Autowired
+    @Autowired
     public RequestController(RequestService requestService) {
         this.requestService = requestService;
     }
+
     @PostMapping
     public ParticipationRequestDto addRequest(@PathVariable @NotNull Long userId,
                                               @RequestParam Long eventId) {
         log.info("Запрос на участие в событии создан", userId, eventId);
         return requestService.create(userId, eventId);
     }
+
     @GetMapping
     public List<ParticipationRequestDto> findAllRequests(@PathVariable Long userId) {
         log.info("Получение информации о заявках текущего пользователя с id = {} " +

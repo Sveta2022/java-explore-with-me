@@ -4,6 +4,7 @@ package ru.practicum.main_service.user.model;
 import lombok.*;
 
 import javax.persistence.*;
+
 @Setter
 @Getter
 @AllArgsConstructor

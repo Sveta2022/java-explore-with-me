@@ -1,4 +1,5 @@
 package ru.practicum.ewm_stats.mapper;
+
 import java.time.format.DateTimeFormatter;
 
 public class Formatter {

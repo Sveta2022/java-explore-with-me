@@ -43,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId) {
         if (requestStorage.findByEventIdAndRequesterId(eventId, userId) != null) {
-throw new ValidationException("Запрос от пользователя с id уже существует " + userId);
+            throw new ValidationException("Запрос от пользователя с id уже существует " + userId);
         }
         User user = userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundObjectException("Пользователя с id " + userId + " нет в списке"));

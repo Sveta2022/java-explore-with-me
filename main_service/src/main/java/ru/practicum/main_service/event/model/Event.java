@@ -1,7 +1,6 @@
 package ru.practicum.main_service.event.model;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.user.model.Location;

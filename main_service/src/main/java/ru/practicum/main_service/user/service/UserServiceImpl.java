@@ -15,7 +15,6 @@ import ru.practicum.main_service.user.mapper.UserMapper;
 import ru.practicum.main_service.user.model.User;
 import org.springframework.data.domain.Pageable;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 

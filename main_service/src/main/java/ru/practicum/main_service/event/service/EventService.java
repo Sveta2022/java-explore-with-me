@@ -1,15 +1,11 @@
 package ru.practicum.main_service.event.service;
 
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
-import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
-import ru.practicum.main_service.requests.model.ParticipationRequest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {

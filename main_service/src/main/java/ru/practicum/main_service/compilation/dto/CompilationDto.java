@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +18,7 @@ public class CompilationDto {
     private String title;
     @Builder.Default
     private Set<EventShortDto> events = new HashSet<>();
+
     @Getter
     @Setter
     @Builder

@@ -3,15 +3,12 @@ package ru.practicum.main_service.event.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
-import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.event.service.EventService;
 
 import javax.validation.constraints.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j

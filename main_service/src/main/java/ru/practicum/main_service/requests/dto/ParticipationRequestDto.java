@@ -1,10 +1,8 @@
 package ru.practicum.main_service.requests.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.main_service.requests.model.RequestEventStatus;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

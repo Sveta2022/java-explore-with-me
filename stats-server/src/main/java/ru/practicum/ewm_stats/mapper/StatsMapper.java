@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class StatsMapper {
 
-    public static EndpointHit toEndpointHit(EndpointHitDto endpointHitDto){
+    public static EndpointHit toEndpointHit(EndpointHitDto endpointHitDto) {
         return EndpointHit.builder()
                 .uri(endpointHitDto.getUri())
                 .app(endpointHitDto.getApp())
@@ -18,7 +18,7 @@ public class StatsMapper {
 
     }
 
-    public static EndpointHitDto toEndpointHitDto(EndpointHit endpointHit){
+    public static EndpointHitDto toEndpointHitDto(EndpointHit endpointHit) {
         return EndpointHitDto.builder()
                 .app(endpointHit.getApp())
                 .uri(endpointHit.getUri())

@@ -261,8 +261,8 @@ public class EventServiseImpl implements EventService {
     @Override
     @Transactional
     public ParticipationRequestDto confirmRequestForEvent(Long userId, Long eventId, Long reqId) {
-       Event event = findEventbyId(eventId);
-       ParticipationRequest request = findRequestById(reqId);
+        Event event = findEventbyId(eventId);
+        ParticipationRequest request = findRequestById(reqId);
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ValidationException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
         }
@@ -273,7 +273,7 @@ public class EventServiseImpl implements EventService {
         //TODO "если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить"
 
         request.setStatus(RequestEventStatus.CONFIRMED);
-       return RequestMapper.toRequestEventDto(requestStorage.save(request));
+        return RequestMapper.toRequestEventDto(requestStorage.save(request));
 
     }
 
@@ -344,8 +344,8 @@ public class EventServiseImpl implements EventService {
     }
 
     private CategoryEvent findCategory(Long id) {
-        return categoryStorage.findById(id).
-                orElseThrow(() -> new NotFoundObjectException("Категория с id " + id + " не найдена"));
+        return categoryStorage.findById(id)
+                .orElseThrow(() -> new NotFoundObjectException("Категория с id " + id + " не найдена"));
     }
 
     private ParticipationRequest findRequestById(Long reqId) {
@@ -365,7 +365,6 @@ public class EventServiseImpl implements EventService {
 
         return 0L;
     }
-
 
 
 }

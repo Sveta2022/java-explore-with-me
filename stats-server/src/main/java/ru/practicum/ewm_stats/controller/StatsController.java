@@ -23,7 +23,7 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public void create(@RequestBody EndpointHitDto endpointHitDto){
+    public void create(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Сохранение информации о том, что к эндпоинту был запрос по uri {}", endpointHitDto.getUri());
         statsService.create(endpointHitDto);
     }
@@ -32,7 +32,7 @@ public class StatsController {
     public List<ViewStats> getViewStats(@RequestParam(name = "start") String start,
                                         @RequestParam(name = "end") String end,
                                         @RequestParam(name = "uris", required = false) List<String> uris,
-                                        @RequestParam(name = "unique", defaultValue = "false") boolean unique){
+                                        @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
         log.info("Статистика по посещению сайта");
         return statsService.getViewStats(start, end, uris, unique);
     }

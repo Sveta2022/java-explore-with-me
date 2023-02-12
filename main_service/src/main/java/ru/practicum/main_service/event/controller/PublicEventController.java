@@ -1,7 +1,6 @@
 package ru.practicum.main_service.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.client.EventClient;
 import ru.practicum.main_service.event.dto.EventFullDto;

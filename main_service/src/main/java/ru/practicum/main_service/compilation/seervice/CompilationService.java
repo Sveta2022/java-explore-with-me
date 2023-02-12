@@ -11,7 +11,7 @@ public interface CompilationService {
 
     List<CompilationDto> getAllCompilations(Boolean pinned, Integer from, Integer size);
 
-    CompilationDto create (NewCompilationDto newCompilationDto);
+    CompilationDto create(NewCompilationDto newCompilationDto);
 
     void removeCompilationById(Long compilationId);
 

@@ -1,7 +1,6 @@
 package ru.practicum.ewm_stats.service;
 
 import ru.practicum.ewm_stats.dto.EndpointHitDto;
-import ru.practicum.ewm_stats.model.EndpointHit;
 import ru.practicum.ewm_stats.model.ViewStats;
 
 import java.util.List;

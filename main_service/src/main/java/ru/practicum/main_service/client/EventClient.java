@@ -17,7 +17,7 @@ import java.util.Map;
 import static ru.practicum.main_service.event.Formatter.FORMATTER;
 
 @Service
-public class EventClient extends BaseClient{
+public class EventClient extends BaseClient {
 
     @Autowired
     public EventClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -28,6 +28,7 @@ public class EventClient extends BaseClient{
                         .build()
         );
     }
+
     public ResponseEntity<Object> createEndPointHit(HttpServletRequest request) {
         String uri = request.getRequestURI();
         String ip = request.getRemoteAddr();
@@ -40,15 +41,13 @@ public class EventClient extends BaseClient{
     }
 
     public ResponseEntity<Object> getViews(LocalDateTime start, LocalDateTime end,
-                                           List<String> uris, Boolean unique)
-    {
+                                           List<String> uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
-            "start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-            "end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-            "uris", uris.get(0),
-            "unique", unique
-    );
-
-    return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
+                "start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                "end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                "uris", uris.get(0),
+                "unique", unique
+        );
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
     }
 }

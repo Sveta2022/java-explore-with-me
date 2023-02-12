@@ -1,10 +1,8 @@
 package ru.practicum.main_service.category.model;
 
 import lombok.*;
-import ru.practicum.main_service.event.model.Event;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Getter
 @Setter

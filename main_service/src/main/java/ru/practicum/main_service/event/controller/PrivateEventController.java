@@ -1,22 +1,17 @@
 package ru.practicum.main_service.event.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.event.service.EventService;
-import ru.practicum.main_service.exception.Create;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
-import ru.practicum.main_service.requests.model.ParticipationRequest;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Slf4j
@@ -62,6 +57,7 @@ public class PrivateEventController {
         log.info("Получение полной информации о событии добавленном текущим пользователем id = {}", eventId);
         return eventService.getEventByIdByCreator(userId, eventId);
     }
+
     @PatchMapping("{eventId}")
     public EventFullDto cancelByCreator(@PathVariable Long userId,
                                         @PathVariable Long eventId) {
@@ -81,18 +77,18 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}/requests/{reqId}/confirm")
     public ParticipationRequestDto confirmRequestForEvent(@PathVariable Long userId,
-                                                                     @PathVariable Long eventId,
-                                                                     @PathVariable Long reqId) {
-        log.info("Подтверждение чужой заявки на участие в событии текущего пользователя", reqId, userId);
+                                                          @PathVariable Long eventId,
+                                                          @PathVariable Long reqId) {
+        log.info("Подтверждение чужой заявки на участие в событии текущего пользователя {} {} {}", reqId, userId, eventId);
         return eventService.confirmRequestForEvent(userId, eventId, reqId);
 
     }
 
     @PatchMapping("/{eventId}/requests/{reqId}/reject")
     public ParticipationRequestDto rejectRequestForEvent(@PathVariable Long userId,
-                                                          @PathVariable Long eventId,
-                                                          @PathVariable Long reqId) {
-        log.info("Отклонение чужой заявки на участие в событии текущего пользователя", reqId, userId);
+                                                         @PathVariable Long eventId,
+                                                         @PathVariable Long reqId) {
+        log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} {}", reqId, userId);
         return eventService.rejectRequestForEvent(userId, eventId, reqId);
 
     }

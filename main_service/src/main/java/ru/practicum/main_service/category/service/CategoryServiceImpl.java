@@ -2,7 +2,6 @@ package ru.practicum.main_service.category.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.aspectj.weaver.patterns.IVerificationRequired;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +44,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto update(CategoryDto categoryDto) {
         verify(categoryDto);
-        CategoryEvent category = categoryStorage.findById(categoryDto.getId()).
-                orElseThrow(() -> new NotFoundObjectException("Категория с id " + categoryDto.getId() + " не существует"));
+        CategoryEvent category = categoryStorage.findById(categoryDto.getId())
+                .orElseThrow(() -> new NotFoundObjectException("Категория с id " + categoryDto.getId() + " не существует"));
         category.setName(categoryDto.getName());
         return CategoryMapper.toCategoryDto(categoryStorage.save(category));
     }
@@ -61,8 +60,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getById(Long catId) {
-        CategoryEvent category = categoryStorage.findById(catId).
-                orElseThrow(() -> new NotFoundObjectException("Категория с id " + catId + " не существует"));
+        CategoryEvent category = categoryStorage.findById(catId)
+                        .orElseThrow(() -> new NotFoundObjectException("Категория с id " + catId + " не существует"));
         return CategoryMapper.toCategoryDto(category);
     }
 

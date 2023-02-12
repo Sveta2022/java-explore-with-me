@@ -3,7 +3,6 @@ package ru.practicum.ewm_stats.service;
 import ru.practicum.ewm_stats.dao.StatsStorage;
 import ru.practicum.ewm_stats.dto.EndpointHitDto;
 import ru.practicum.ewm_stats.mapper.StatsMapper;
-import ru.practicum.ewm_stats.model.EndpointHit;
 import ru.practicum.ewm_stats.model.ViewStats;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -13,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +29,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     @Transactional
-    public void create(EndpointHitDto endpointHitDto){
+    public void create(EndpointHitDto endpointHitDto) {
 
         statStorage.save(StatsMapper.toEndpointHit(endpointHitDto));
     }

@@ -20,15 +20,15 @@ public class EventMapper {
                 .annotation(eventShortDto.getAnnotation())
                 .category(CategoryEvent.builder()
                         .id(eventShortDto.getCategory().getId())
-                        .name(eventShortDto.getCategory().getName()).
-                        build())
+                        .name(eventShortDto.getCategory().getName())
+                        .build())
                 .eventDate(LocalDateTime.parse(eventShortDto.getEventDate(), FORMATTER))
                 .paid(eventShortDto.getPaid())
                 .title(eventShortDto.getTitle())
                 .build();
     }
 
-    public static EventShortDto eventShortDto (Event event, int confirmedRequests){
+    public static EventShortDto eventShortDto(Event event, int confirmedRequests) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -71,7 +71,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static NewEventDto newEventDto(Event event){
+    public static NewEventDto newEventDto(Event event) {
         return NewEventDto.builder()
                 .eventId(event.getId())
                 .description(event.getDescription())
@@ -99,7 +99,7 @@ public class EventMapper {
                         .build())
                 .createdOn(eventFullDto.getCreatedOn())
                 .description(eventFullDto.getDescription())
-                .eventDate(LocalDateTime.parse(eventFullDto.getEventDate(), FORMATTER))
+                .eventDate(eventFullDto.getEventDate())
                 .paid(eventFullDto.getPaid())
                 .participantLimit(eventFullDto.getParticipantLimit())
                 .publishedOn(eventFullDto.getPublishedOn())
@@ -110,7 +110,7 @@ public class EventMapper {
 
     }
 
-    public static EventFullDto eventFullDto(Event event, int confirmedRequests){
+    public static EventFullDto eventFullDto(Event event, int confirmedRequests) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -121,7 +121,7 @@ public class EventMapper {
                 .confirmedRequests(0)
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
-                .eventDate(event.getEventDate().format(FORMATTER))
+                .eventDate(event.getEventDate())
                 .initiator(EventFullDto.UserShortDto.builder()
                         .id(event.getInitiator().getId())
                         .name(event.getInitiator().getName())

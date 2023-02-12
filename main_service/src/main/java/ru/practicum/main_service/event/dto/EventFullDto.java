@@ -1,5 +1,6 @@
 package ru.practicum.main_service.event.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.main_service.event.model.StateEvent;
@@ -7,27 +8,30 @@ import ru.practicum.main_service.event.model.StateEvent;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
+
 @Getter
 @Setter
 @Builder
 public class EventFullDto {
 
     private Long id;
+
     @NotBlank
     private String annotation;
+
     @NotNull
     private CategoryDto category;
     private Integer confirmedRequests;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
     private String description;
-   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull
-    private String eventDate;
+    private LocalDateTime eventDate;
 
     @NotNull
     private UserShortDto initiator;
+
     @NotNull
     private LocationDto location;
     @NotNull

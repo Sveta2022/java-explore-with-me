@@ -10,7 +10,6 @@ import ru.practicum.main_service.exception.Create;
 import ru.practicum.main_service.user.dto.UserDto;
 import ru.practicum.main_service.user.service.UserService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;

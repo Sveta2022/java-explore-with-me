@@ -14,12 +14,11 @@ import ru.practicum.main_service.requests.controller.RequestController;
 import ru.practicum.main_service.user.controller.AdminUserController;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
 
 @RestControllerAdvice(assignableTypes = {AdminUserController.class, AdminEventController.class,
         PrivateEventController.class, PublicEventController.class, AdminCategoryController.class,
-PublicCategoryController.class, RequestController.class})
+        PublicCategoryController.class, RequestController.class})
 @Slf4j
 public class ErrorHandler {
     @ExceptionHandler
@@ -34,10 +33,6 @@ public class ErrorHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 
-
-//        return new ResponseEntity<>(
-//                Map.of("error", v.getMessage()),
-//                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

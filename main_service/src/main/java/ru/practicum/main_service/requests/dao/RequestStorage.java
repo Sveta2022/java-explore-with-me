@@ -9,7 +9,6 @@ import ru.practicum.main_service.requests.model.RequestEventStatus;
 import java.util.List;
 
 
-
 public interface RequestStorage extends JpaRepository<ParticipationRequest, Long> {
 
     @Query(nativeQuery = true,
