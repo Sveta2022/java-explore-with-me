@@ -41,7 +41,7 @@ public class AdminEventController {
         return eventService.publishByAdmin(eventId);
     }
 
-    @DeleteMapping("/{eventId}/reject")
+    @PatchMapping("/{eventId}/reject")
     public EventFullDto rejectByAdmin(@PathVariable @NotNull Long eventId) {
         log.info("Отклонение события с id {} ", eventId);
         return eventService.rejectByAdmin(eventId);
@@ -55,7 +55,6 @@ public class AdminEventController {
                                                    @RequestParam(required = false) String rangeEnd,
                                                    @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                    @Positive @RequestParam(defaultValue = "10") Integer size) {
-        System.out.println(size);
 
         log.info("Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия");
         return eventService.getEventsByParametrs(users, states, categories, rangeStart, rangeEnd, from, size);

@@ -15,6 +15,7 @@ import ru.practicum.main_service.exception.Create;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
 import ru.practicum.main_service.requests.model.ParticipationRequest;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class PrivateEventController {
 
     @PostMapping
     public EventFullDto create(@PathVariable Long userId,
-                               @RequestBody @Validated({Create.class}) NewEventDto eventNewDto) {
+                               @RequestBody @Valid NewEventDto eventNewDto) {
         log.info("Добавление нового события = {}, пользователем с id = {} ", eventNewDto.getEventId(), userId);
         return eventService.create(userId, eventNewDto);
     }
@@ -61,6 +62,14 @@ public class PrivateEventController {
         log.info("Получение полной информации о событии добавленном текущим пользователем id = {}", eventId);
         return eventService.getEventByIdByCreator(userId, eventId);
     }
+    @PatchMapping("{eventId}")
+    public EventFullDto cancelByCreator(@PathVariable Long userId,
+                                        @PathVariable Long eventId) {
+        log.info("Отмена события c id = {}, добавленного текущим пользователем c id = {}", eventId, userId);
+        return eventService.cancelByCreator(userId, eventId);
+
+    }
+
 
     @PatchMapping
     public EventFullDto updateByCreator(@PathVariable Long userId,
@@ -79,12 +88,12 @@ public class PrivateEventController {
 
     }
 
-    @PatchMapping("/{eventId}/requests/{reqId}/confirm")
+    @PatchMapping("/{eventId}/requests/{reqId}/reject")
     public ParticipationRequestDto rejectRequestForEvent(@PathVariable Long userId,
                                                           @PathVariable Long eventId,
                                                           @PathVariable Long reqId) {
         log.info("Отклонение чужой заявки на участие в событии текущего пользователя", reqId, userId);
-        return eventService.confirmRequestForEvent(userId, eventId, reqId);
+        return eventService.rejectRequestForEvent(userId, eventId, reqId);
 
     }
 }

@@ -7,13 +7,8 @@
 		<artifactId>explore-with-me</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
 	<artifactId>main_service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-
-	<name>main_service</name>
-	<description>main_service</description>
-
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -22,7 +17,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -66,7 +60,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
 		<dependency>
 		<groupId>com.google.code.gson</groupId>
 		<artifactId>gson</artifactId>

@@ -17,13 +17,13 @@ import java.util.List;
 @RequestMapping("/events")
 public class PublicEventController {
 
-    private EventService eventService;
-   // private EventClient eventClient;
+    private final EventService eventService;
+    private final EventClient eventClient;
 
-    @Autowired
-    public PublicEventController(EventService eventService) {
+
+    public PublicEventController(EventService eventService, EventClient eventClient) {
         this.eventService = eventService;
-
+        this.eventClient = eventClient;
     }
 
     @GetMapping
@@ -40,7 +40,7 @@ public class PublicEventController {
         log.info("Получение событий с возможностью фильтрации: text = {}, categoriesId = {}, paid = {}, rangeStart = {}, rangeEnd = {}, " +
                         "onlyAvailable = {}, sort = {}, from = {}, size = {}", text, categoriesId, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
-      //  eventClient.createEndPointHit(httpServletRequest);
+        eventClient.createEndPointHit(httpServletRequest);
         return eventService.getEventsWithFilter(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
@@ -48,7 +48,7 @@ public class PublicEventController {
     public EventFullDto getEventById(@PathVariable Long id,
                                      HttpServletRequest httpServletRequest) {
         log.info("get event with id {}", id);
-     //   eventClient.createEndPointHit(httpServletRequest);
+        eventClient.createEndPointHit(httpServletRequest);
         return eventService.getEventById(id);
     }
 }

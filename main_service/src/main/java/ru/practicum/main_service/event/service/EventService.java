@@ -28,8 +28,6 @@ public interface EventService {
 
     EventFullDto getEventById(Long id);
 
-    void incrementView(Long id);
-
     EventFullDto updateByCreator(Long userId, NewEventDto newEventDto);
 
     List<EventFullDto> getEventsByParametrs(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size);
@@ -39,4 +37,8 @@ public interface EventService {
     List<ParticipationRequestDto> getRequestEventByUser(Long userId, Long eventId);
 
     ParticipationRequestDto confirmRequestForEvent(Long userId, Long eventId, Long reqId);
+
+    ParticipationRequestDto rejectRequestForEvent(Long userId, Long eventId, Long reqId);
+
+    EventFullDto cancelByCreator(Long userId, Long eventId);
 }

@@ -2,14 +2,15 @@ package ru.practicum.main_service.event.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.tomcat.util.digester.ArrayStack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.category.dao.CategoryStorage;
 import ru.practicum.main_service.category.model.CategoryEvent;
+import ru.practicum.main_service.client.EventClient;
 import ru.practicum.main_service.event.dao.EventStorage;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
@@ -40,17 +41,20 @@ import static ru.practicum.main_service.event.Formatter.FORMATTER;
 @Transactional(readOnly = true)
 public class EventServiseImpl implements EventService {
 
-    EventStorage eventStorage;
-    UserStorage userStorage;
-    RequestStorage requestStorage;
-    CategoryStorage categoryStorage;
+    private EventStorage eventStorage;
+    private UserStorage userStorage;
+    private RequestStorage requestStorage;
+    private CategoryStorage categoryStorage;
+    private EventClient eventClient;
 
     @Autowired
-    public EventServiseImpl(EventStorage eventStorage, UserStorage userStorage, RequestStorage requestStorage, CategoryStorage categoryStorage) {
+    public EventServiseImpl(EventStorage eventStorage, UserStorage userStorage, RequestStorage requestStorage,
+                            CategoryStorage categoryStorage, EventClient eventClient) {
         this.eventStorage = eventStorage;
         this.userStorage = userStorage;
         this.requestStorage = requestStorage;
         this.categoryStorage = categoryStorage;
+        this.eventClient = eventClient;
     }
 
     @Override
@@ -156,7 +160,7 @@ public class EventServiseImpl implements EventService {
         }
         return events
                 .stream()
-                .peek(shortEventDto -> incrementView(shortEventDto.getId()))
+                .peek(shortEventDto -> getViews(shortEventDto.getId()))
                 .peek(shortEventDto -> shortEventDto.setViews(getViews(shortEventDto.getId()))) //TODO доделать метод
                 .collect(Collectors.toList());
     }
@@ -170,7 +174,7 @@ public class EventServiseImpl implements EventService {
         if (!event.getStateEvent().equals(StateEvent.PUBLISHED)) {
             throw new ValidationException("Cобытие должно быть опубликовано");
         }
-        incrementView(id);
+        getViews(id);
         EventFullDto fullDto = EventMapper.eventFullDto(event, getCountConfirmedRequests(id).orElse(0));
         fullDto.setViews(getViews(id));
         return fullDto;
@@ -233,6 +237,7 @@ public class EventServiseImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto rejectByAdmin(Long eventId) {
         Event event = findEventbyId(eventId);
         if (event.getStateEvent().equals(StateEvent.PUBLISHED)) {
@@ -270,6 +275,26 @@ public class EventServiseImpl implements EventService {
         request.setStatus(RequestEventStatus.CONFIRMED);
        return RequestMapper.toRequestEventDto(requestStorage.save(request));
 
+    }
+
+    @Override
+    @Transactional
+    public ParticipationRequestDto rejectRequestForEvent(Long userId, Long eventId, Long reqId) {
+        Event event = findEventbyId(eventId);
+        ParticipationRequest request = findRequestById(reqId);
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new ValidationException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
+        }
+        request.setStatus(RequestEventStatus.REJECTED);
+        return RequestMapper.toRequestEventDto(requestStorage.save(request));
+    }
+
+    @Override
+    @Transactional
+    public EventFullDto cancelByCreator(Long userId, Long eventId) {
+        Event event = findEventbyId(eventId);
+        event.setStateEvent(StateEvent.CANCELED);
+        return EventMapper.eventFullDto(event, getCountConfirmedRequests(eventId).orElse(0));
     }
 
     private void checkBeforeSaveNewEvent(NewEventDto newEventDto, Event event) {
@@ -327,15 +352,20 @@ public class EventServiseImpl implements EventService {
         return requestStorage.findById(reqId).orElseThrow(() -> new NotFoundObjectException("Реквест с id " + reqId + " не найдена"));
     }
 
-    @Override
-    @Transactional
-    public void incrementView(Long id) {
-        eventStorage.incrementView(id);
+    private Long getViews(long eventId) {
+        ResponseEntity<Object> responseEntity = eventClient.getViews(
+                LocalDateTime.of(2020, 9, 1, 0, 0),
+                LocalDateTime.now(),
+                List.of("/events/" + eventId),
+                false);
+
+        if (Objects.equals(responseEntity.getBody(), "")) {
+            return ((Map<String, Long>) responseEntity.getBody()).get("hits");
+        }
+
+        return 0L;
     }
 
-    private Long getViews(Long id) {
-        return eventStorage.getViewByEventId(id);
-    }
 
 
 }

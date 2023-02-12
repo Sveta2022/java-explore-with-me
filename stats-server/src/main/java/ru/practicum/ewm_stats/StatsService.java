@@ -1,4 +1,4 @@
-package com.example.statsservice.stat;
+package ru.practicum.ewm_stats;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

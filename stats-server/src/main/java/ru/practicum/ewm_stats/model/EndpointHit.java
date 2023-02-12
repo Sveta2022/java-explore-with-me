@@ -1,4 +1,4 @@
-package com.example.statsservice.stat.model;
+package ru.practicum.ewm_stats.model;
 
 import lombok.*;
 
@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @Builder
-@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "stats")
 public class EndpointHit {

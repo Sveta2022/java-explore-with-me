@@ -1,4 +1,4 @@
-package com.example.statsservice.stat.dto;
+package ru.practicum.ewm_stats.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -20,6 +20,5 @@ public class EndpointHitDto {
     private String uri;
     @NotBlank
     private String ip;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    String timestamp;
 }
