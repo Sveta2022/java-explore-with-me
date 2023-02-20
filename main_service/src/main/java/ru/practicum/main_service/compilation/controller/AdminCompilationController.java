@@ -3,6 +3,7 @@ package ru.practicum.main_service.compilation.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.compilation.dto.CompilationDto;
@@ -27,6 +28,7 @@ public class AdminCompilationController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto creat(@Valid @RequestBody NewCompilationDto newCompilationDto) {
 
         log.info("Добавление новой подборки");
@@ -34,6 +36,7 @@ public class AdminCompilationController {
     }
 
     @DeleteMapping("/{compId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void removeCompilationById(@PathVariable @NotNull Long compId) {
 
         log.info("Удаление подборки с id = {}", compId);
@@ -41,6 +44,7 @@ public class AdminCompilationController {
     }
 
     @DeleteMapping("/{compId}/events/{eventId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void removeEventFromCompilation(@PathVariable @NotNull Long compId,
                                            @PathVariable @NotNull Long eventId) {
 
@@ -57,6 +61,7 @@ public class AdminCompilationController {
     }
 
     @DeleteMapping("/{compId}/pin")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public CompilationDto pinnedOutCompilation(@PathVariable @NotNull Long compId) {
 
         log.info("Открепить подборку на главной странице с id = {}", compId);

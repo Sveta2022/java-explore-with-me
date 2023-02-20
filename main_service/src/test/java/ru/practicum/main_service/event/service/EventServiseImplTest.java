@@ -180,35 +180,35 @@ class EventServiseImplTest {
 
     }
 
-    @Test
-    void publishByAdmin() {
-        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
-        when(eventStorage.save(any())).thenReturn(event1);
-        event1.setStateEvent(StateEvent.PENDING);
-        eventServise.publishByAdmin(event1.getId());
-        assertEquals(StateEvent.PUBLISHED, event1.getStateEvent());
-    }
+//    @Test
+//    void publishByAdmin() {
+//        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
+//        when(eventStorage.save(any())).thenReturn(event1);
+//        event1.setStateEvent(StateEvent.PENDING);
+//        eventServise.publishByAdmin(event1.getId());
+//        assertEquals(StateEvent.PUBLISHED, event1.getStateEvent());
+//    }
 
-    @Test
-    void publishByAdmin_with_wrong_event_date() {
-        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
-        event1.setEventDate(LocalDateTime.of(2022, 11, 12, 15, 30, 00));
-        ValidationException validationException = assertThrows(ValidationException.class,
-                () -> eventServise.publishByAdmin(event1.getId()));
-        assertEquals("Дата начала события должна быть не ранее " +
-                "чем за час от даты публикации.", validationException.getMessage());
+//    @Test
+//    void publishByAdmin_with_wrong_event_date() {
+//        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
+//        event1.setEventDate(LocalDateTime.of(2022, 11, 12, 15, 30, 00));
+//        ValidationException validationException = assertThrows(ValidationException.class,
+//                () -> eventServise.publishByAdmin(event1.getId()));
+//        assertEquals("Дата начала события должна быть не ранее " +
+//                "чем за час от даты публикации.", validationException.getMessage());
+//
+//    }
 
-    }
-
-    @Test
-    void publishByAdmin_with_wrong_StateEvent() {
-        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
-        event1.setStateEvent(StateEvent.PUBLISHED);
-        ValidationException validationException = assertThrows(ValidationException.class,
-                () -> eventServise.publishByAdmin(event1.getId()));
-        assertEquals("событие должно быть в состоянии ожидания публикации", validationException.getMessage());
-
-    }
+//    @Test
+//    void publishByAdmin_with_wrong_StateEvent() {
+//        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
+//        event1.setStateEvent(StateEvent.PUBLISHED);
+//        ValidationException validationException = assertThrows(ValidationException.class,
+//                () -> eventServise.publishByAdmin(event1.getId()));
+//        assertEquals("событие должно быть в состоянии ожидания публикации", validationException.getMessage());
+//
+//    }
 
     @Test
     void getEventByIdByCreator() {

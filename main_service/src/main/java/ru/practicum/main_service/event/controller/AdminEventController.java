@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.event.dto.EventFullDto;
+import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.event.service.EventService;
 
@@ -32,17 +33,25 @@ public class AdminEventController {
         return eventService.update(newEventDto, eventId);
     }
 
-    @PatchMapping("/{eventId}/publish")
-    public EventFullDto publishByAdmin(@PathVariable @NotNull Long eventId) {
-        log.info("Публикация события с id {} ", eventId);
-        return eventService.publishByAdmin(eventId);
+//    @PatchMapping("/{eventId}/publish")
+//    public EventFullDto publishByAdmin(@PathVariable @NotNull Long eventId) {
+//        log.info("Публикация события с id {} ", eventId);
+//        return eventService.publishByAdmin(eventId);
+//    }
+//
+//    @PatchMapping("/{eventId}/reject")
+//    public EventFullDto rejectByAdmin(@PathVariable @NotNull Long eventId) {
+//        log.info("Отклонение события с id {} ", eventId);
+//        return eventService.rejectByAdmin(eventId);
+//    }
+
+    @PatchMapping("/{eventId}")
+    public EventFullDto updateEventByAdmin(@PathVariable @NotNull Long eventId,
+                                           @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
+        log.info("Редактирование данных любого события администратором");
+        return eventService.updateEventByAdmin(eventId, eventUpdateRequestDto);
     }
 
-    @PatchMapping("/{eventId}/reject")
-    public EventFullDto rejectByAdmin(@PathVariable @NotNull Long eventId) {
-        log.info("Отклонение события с id {} ", eventId);
-        return eventService.rejectByAdmin(eventId);
-    }
 
     @GetMapping
     public List<EventFullDto> getEventsByParametrs(@RequestParam(required = false) List<Long> users,

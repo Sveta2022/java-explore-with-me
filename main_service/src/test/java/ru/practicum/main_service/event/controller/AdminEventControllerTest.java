@@ -65,17 +65,17 @@ class AdminEventControllerTest {
                 .build();
     }
 
-    @Test
-    @SneakyThrows
-    void publishByAdmin() {
-        Long eventId = 1L;
-        when(eventServise.publishByAdmin(eventId)).thenReturn(eventFullDto1);
-        mockMvc.perform(patch("/admin/events/{eventId}/publish",eventId))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        verify(eventServise,times(1)).publishByAdmin(eventId);
-
-    }
+//    @Test
+//    @SneakyThrows
+//    void publishByAdmin() {
+//        Long eventId = 1L;
+//        when(eventServise.publishByAdmin(eventId)).thenReturn(eventFullDto1);
+//        mockMvc.perform(patch("/admin/events/{eventId}/publish",eventId))
+//                .andExpect(status().isOk())
+//                .andReturn()
+//                .getResponse()
+//                .getContentAsString();
+//        verify(eventServise,times(1)).publishByAdmin(eventId);
+//
+//    }
 }

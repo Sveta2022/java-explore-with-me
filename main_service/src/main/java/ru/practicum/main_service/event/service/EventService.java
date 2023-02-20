@@ -3,6 +3,7 @@ package ru.practicum.main_service.event.service;
 
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
+import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
 
@@ -16,7 +17,7 @@ public interface EventService {
 
     EventFullDto update(NewEventDto newEventDto, Long eventId);
 
-    EventFullDto publishByAdmin(Long eventId);
+//    EventFullDto publishByAdmin(Long eventId);
 
     EventFullDto getEventByIdByCreator(Long userId, Long eventId);
 
@@ -24,11 +25,11 @@ public interface EventService {
 
     EventFullDto getEventById(Long id);
 
-    EventFullDto updateByCreator(Long userId, NewEventDto newEventDto);
+    EventFullDto updateByCreator(Long userId, Long eventId, EventUpdateRequestDto eventUpdateRequestDto);
 
     List<EventFullDto> getEventsByParametrs(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size);
 
-    EventFullDto rejectByAdmin(Long eventId);
+//    EventFullDto rejectByAdmin(Long eventId);
 
     List<ParticipationRequestDto> getRequestEventByUser(Long userId, Long eventId);
 
@@ -37,4 +38,6 @@ public interface EventService {
     ParticipationRequestDto rejectRequestForEvent(Long userId, Long eventId, Long reqId);
 
     EventFullDto cancelByCreator(Long userId, Long eventId);
+
+    EventFullDto updateEventByAdmin(Long eventId, EventUpdateRequestDto eventUpdateRequestDto);
 }

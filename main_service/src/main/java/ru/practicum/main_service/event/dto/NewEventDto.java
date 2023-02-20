@@ -9,7 +9,6 @@ import javax.validation.constraints.*;
 @Getter
 @Setter
 @Builder
-
 public class NewEventDto {
 
     private Long eventId;

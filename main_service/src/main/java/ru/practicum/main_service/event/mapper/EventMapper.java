@@ -3,6 +3,7 @@ package ru.practicum.main_service.event.mapper;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
+import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
@@ -33,7 +34,6 @@ public class EventMapper {
                 .title(event.getTitle())
                 .views(event.getViews())
                 .build();
-
     }
 
     public static Event toEvent(NewEventDto newEventDto) {
@@ -86,6 +86,21 @@ public class EventMapper {
                 .state(event.getStateEvent())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .build();
+    }
+
+    public static NewEventDto newEventDto(EventUpdateRequestDto eventUpdateRequestDto){
+        return NewEventDto.builder()
+                .eventId(eventUpdateRequestDto.getEventId())
+                .annotation(eventUpdateRequestDto.getAnnotation())
+                .category(eventUpdateRequestDto.getCategory())
+                .description(eventUpdateRequestDto.getDescription())
+                .eventDate(eventUpdateRequestDto.getEventDate())
+                .location(eventUpdateRequestDto.getLocation())
+                .paid(eventUpdateRequestDto.getPaid())
+                .participantLimit(eventUpdateRequestDto.getParticipantLimit())
+                .requestModeration(eventUpdateRequestDto.getRequestModeration())
+                .title(eventUpdateRequestDto.getTitle())
                 .build();
     }
 }

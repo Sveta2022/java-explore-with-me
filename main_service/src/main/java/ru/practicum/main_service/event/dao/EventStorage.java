@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Optional;
 
 
 public interface EventStorage extends JpaRepository<Event, Long> {
@@ -17,6 +17,7 @@ public interface EventStorage extends JpaRepository<Event, Long> {
     List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
     Event findByIdAndInitiatorId(Long eventId, Long userId);
+    Optional<Event> findByCategoryId(Long catId);
 
     @Query(nativeQuery = true,
             value = " select * from events as e " +

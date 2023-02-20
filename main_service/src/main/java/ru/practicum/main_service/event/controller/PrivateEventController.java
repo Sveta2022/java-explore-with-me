@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
+import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.event.service.EventService;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
@@ -27,6 +29,7 @@ public class PrivateEventController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto create(@PathVariable Long userId,
                                @RequestBody @Valid NewEventDto eventNewDto) {
         log.info("Добавление нового события = {}, пользователем с id = {} ", eventNewDto.getEventId(), userId);
@@ -58,20 +61,21 @@ public class PrivateEventController {
         return eventService.getEventByIdByCreator(userId, eventId);
     }
 
+//    @PatchMapping("{eventId}")
+//    public EventFullDto cancelByCreator(@PathVariable Long userId,
+//                                        @PathVariable Long eventId) {
+//        log.info("Отмена события c id = {}, добавленного текущим пользователем c id = {}", eventId, userId);
+//        return eventService.cancelByCreator(userId, eventId);
+//
+//    }
+
+
     @PatchMapping("{eventId}")
-    public EventFullDto cancelByCreator(@PathVariable Long userId,
-                                        @PathVariable Long eventId) {
-        log.info("Отмена события c id = {}, добавленного текущим пользователем c id = {}", eventId, userId);
-        return eventService.cancelByCreator(userId, eventId);
-
-    }
-
-
-    @PatchMapping
     public EventFullDto updateByCreator(@PathVariable Long userId,
-                                        @RequestBody NewEventDto newEventDto) {
-        log.info("Изменение события id = {}, добавленного текущим пользователем с id = {} ", newEventDto.getEventId(), userId);
-        return eventService.updateByCreator(userId, newEventDto);
+                                        @PathVariable Long eventId,
+                                        @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
+        log.info("Изменение события id = {}, добавленного текущим пользователем с id = {} ", eventId, userId);
+        return eventService.updateByCreator(userId, eventId, eventUpdateRequestDto);
 
     }
 
@@ -84,12 +88,20 @@ public class PrivateEventController {
 
     }
 
-    @PatchMapping("/{eventId}/requests/{reqId}/reject")
-    public ParticipationRequestDto rejectRequestForEvent(@PathVariable Long userId,
+    @PatchMapping("/{eventId}/requests")
+    public ParticipationRequestDto deleteRequestForEvent(@PathVariable Long userId,
                                                          @PathVariable Long eventId,
-                                                         @PathVariable Long reqId) {
-        log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} {}", reqId, userId);
-        return eventService.rejectRequestForEvent(userId, eventId, reqId);
-
+                                                         @RequestBody ParticipationRequestDto participationRequestDto) {
+        log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} ", userId);
+        return ParticipationRequestDto.builder().build();
     }
+
+//    @PatchMapping("/{eventId}/requests/{reqId}/cancel")
+//    public ParticipationRequestDto rejectRequestForEvent(@PathVariable Long userId,
+//                                                         @PathVariable Long eventId,
+//                                                         @PathVariable Long reqId) {
+//        log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} {}", reqId, userId);
+//        return eventService.rejectRequestForEvent(userId, eventId, reqId);
+//    }
+
 }

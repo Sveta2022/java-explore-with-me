@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.event.dao.EventStorage;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
+import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
 import ru.practicum.main_service.exception.ValidationException;
 import ru.practicum.main_service.requests.dao.RequestStorage;
@@ -42,16 +43,20 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId) {
         if (requestStorage.findByEventIdAndRequesterId(eventId, userId) != null) {
-            throw new ValidationException("Запрос от пользователя с id уже существует " + userId);
+            throw new ConflictException("Запрос от пользователя с id уже существует " + userId);
         }
         User user = getUserById(userId);
         Event event = eventStorage.findById(eventId)
                 .orElseThrow(() -> new NotFoundObjectException("События с id " + eventId + " нет в списке"));
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ValidationException("Пользователь с id " + userId + "не может опубликовать запрос");
+            throw new ConflictException("Пользователь с id " + userId + "не может опубликовать запрос");
+        }
+        int countRequestConfirmed = requestStorage.countParticipationRequestByEventIdAndStatus(eventId, RequestEventStatus.CONFIRMED);
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= countRequestConfirmed) {
+            throw new ConflictException("У события достигнут лимит запросов на участие");
         }
         if (!event.getStateEvent().equals(StateEvent.PUBLISHED)) {
-            throw new ValidationException("Событие не имеет статус Опубликовано");
+            throw new ConflictException("Событие не имеет статус Опубликовано");
         }
         ParticipationRequest request = ParticipationRequest.builder()
                 .requester(user)

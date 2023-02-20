@@ -11,14 +11,12 @@ import ru.practicum.client.EventClient;
 import ru.practicum.main_service.category.dao.CategoryStorage;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.event.dao.EventStorage;
-import ru.practicum.main_service.event.dto.EventFullDto;
-import ru.practicum.main_service.event.dto.EventShortDto;
-import ru.practicum.main_service.event.dto.NewEventDto;
+import ru.practicum.main_service.event.dto.*;
 import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
+import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
-import ru.practicum.main_service.exception.ValidationException;
 import ru.practicum.main_service.requests.dao.RequestStorage;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
 import ru.practicum.main_service.requests.mapper.RequestMapper;
@@ -53,7 +51,7 @@ public class EventServiseImpl implements EventService {
         User user = findUserbyId(userId);
         Event event = EventMapper.toEvent(eventNewDto);
         if (LocalDateTime.now().plusHours(2).isAfter(event.getEventDate())) {
-            throw new ValidationException("дата и время на которые намечено событие не может быть раньше, " +
+            throw new ConflictException("дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
         event.setInitiator(user);
@@ -84,22 +82,6 @@ public class EventServiseImpl implements EventService {
                 getCountConfirmedRequests(eventId).orElse(0));
     }
 
-    @Override
-    @Transactional
-    public EventFullDto publishByAdmin(Long eventId) {
-        Event event = findEventbyId(eventId);
-        if (LocalDateTime.now().plusHours(1).isAfter(event.getEventDate())) {
-            throw new ValidationException("Дата начала события должна быть не ранее " +
-                    "чем за час от даты публикации.");
-        }
-        if (!event.getStateEvent().equals(StateEvent.PENDING)) {
-            throw new ValidationException("событие должно быть в состоянии ожидания публикации");
-        }
-        event.setStateEvent(StateEvent.PUBLISHED);
-        event.setPublishedOn(LocalDateTime.now());
-
-        return EventMapper.eventFullDto(eventStorage.save(event), 0);
-    }
 
     @Override
     public EventFullDto getEventByIdByCreator(Long userId, Long eventId) {
@@ -146,7 +128,7 @@ public class EventServiseImpl implements EventService {
                             .collect(Collectors.toList());
                     break;
                 default:
-                    throw new ValidationException("Вариант сортировки: по дате события или по количеству просмотров");
+                    throw new ConflictException("Вариант сортировки: по дате события или по количеству просмотров");
             }
         }
         return events
@@ -163,7 +145,7 @@ public class EventServiseImpl implements EventService {
 
         Event event = findEventbyId(id);
         if (!event.getStateEvent().equals(StateEvent.PUBLISHED)) {
-            throw new ValidationException("Cобытие должно быть опубликовано");
+            throw new ConflictException("Cобытие должно быть опубликовано");
         }
         getViews(id);
         EventFullDto fullDto = EventMapper.eventFullDto(event, getCountConfirmedRequests(id).orElse(0));
@@ -178,24 +160,28 @@ public class EventServiseImpl implements EventService {
     }
 
     @Override
-    public EventFullDto updateByCreator(Long userId, NewEventDto newEventDto) {
-        Event event = findEventbyId(newEventDto.getEventId());
-        if (LocalDateTime.now().plusHours(2).isAfter(LocalDateTime.parse(newEventDto.getEventDate(), FORMATTER))) {
-            throw new ValidationException("дата и время на которые намечено событие не может быть раньше, " +
-                    "чем через два часа от текущего момента");
-        }
+    @Transactional
+    public EventFullDto updateByCreator(Long userId,Long eventId, EventUpdateRequestDto eventUpdateRequestDto) {
+
+        Event event = findEventbyId(eventId);
+
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ValidationException("Событие может изменить только текущий пользователь");
+            throw new ConflictException("Событие может изменить только текущий пользователь");
         }
         if (event.getStateEvent().equals(StateEvent.PUBLISHED)) {
-            throw new ValidationException("изменить можно только отмененные события или события " +
+            throw new ConflictException("изменить можно только отмененные события или события " +
                     "в состоянии ожидания модерации");
         }
 
         if (event.getStateEvent().equals(StateEvent.CANCELED)) {
             event.setStateEvent(StateEvent.PENDING);
         }
+        NewEventDto newEventDto = EventMapper.newEventDto(eventUpdateRequestDto);
         checkBeforeSaveNewEvent(newEventDto, event);
+        if (LocalDateTime.now().plusHours(2).isAfter(event.getEventDate())) {
+            throw new ConflictException("дата и время на которые намечено событие не может быть раньше, " +
+                    "чем через два часа от текущего момента");
+        }
 
         EventFullDto eventFullDtoReturn = EventMapper.eventFullDto(eventStorage.save(event),
                 getCountConfirmedRequests(event.getId()).orElse(0));
@@ -228,21 +214,10 @@ public class EventServiseImpl implements EventService {
     }
 
     @Override
-    @Transactional
-    public EventFullDto rejectByAdmin(Long eventId) {
-        Event event = findEventbyId(eventId);
-        if (event.getStateEvent().equals(StateEvent.PUBLISHED)) {
-            throw new ValidationException("Cобытие не должно быть опубликовано.");
-        }
-        event.setStateEvent(StateEvent.CANCELED);
-        return EventMapper.eventFullDto(eventStorage.save(event), getCountConfirmedRequests(eventId).orElse(0));
-    }
-
-    @Override
     public List<ParticipationRequestDto> getRequestEventByUser(Long userId, Long eventId) {
         Event event = findEventbyId(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ValidationException("Список запросов на участие в событие доступен только владельцу аккаунта");
+            throw new ConflictException("Список запросов на участие в событие доступен только владельцу аккаунта");
         }
         User user = findUserbyId(userId);
         List<ParticipationRequestDto> participationRequest = requestStorage.findAllByEventId(event.getId()).stream().map(RequestMapper::toRequestEventDto).collect(Collectors.toList());
@@ -255,10 +230,10 @@ public class EventServiseImpl implements EventService {
         Event event = findEventbyId(eventId);
         ParticipationRequest request = findRequestById(reqId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ValidationException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
+            throw new ConflictException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
         }
         if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
-            throw new ValidationException("Запрос не может быть подтвержден");
+            throw new ConflictException("Запрос не может быть подтвержден");
         }
         request.setStatus(RequestEventStatus.CONFIRMED);
         return RequestMapper.toRequestEventDto(requestStorage.save(request));
@@ -271,7 +246,7 @@ public class EventServiseImpl implements EventService {
         Event event = findEventbyId(eventId);
         ParticipationRequest request = findRequestById(reqId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ValidationException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
+            throw new ConflictException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
         }
         request.setStatus(RequestEventStatus.REJECTED);
         return RequestMapper.toRequestEventDto(requestStorage.save(request));
@@ -283,6 +258,40 @@ public class EventServiseImpl implements EventService {
         Event event = findEventbyId(eventId);
         event.setStateEvent(StateEvent.CANCELED);
         return EventMapper.eventFullDto(event, getCountConfirmedRequests(eventId).orElse(0));
+    }
+
+    @Override
+    @Transactional
+    public EventFullDto updateEventByAdmin(Long eventId, EventUpdateRequestDto eventUpdateRequestDto) {
+        Event event = findEventbyId(eventId);
+        NewEventDto newEventDto = EventMapper.newEventDto(eventUpdateRequestDto);
+        checkBeforeSaveNewEvent(newEventDto, event);
+        LocalDateTime updateEventDate = event.getEventDate();
+        if (updateEventDate.isBefore(LocalDateTime.now().minusHours(1))) {
+            throw new ConflictException("Дата начала изменяемого события должна быть " +
+                    "не ранее чем за час от даты публикации.");
+        }
+        if (!event.getStateEvent().equals(StateEvent.PENDING) && eventUpdateRequestDto.getStateAction()
+                .equals(StateAction.PUBLISH_EVENT)) {
+            throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания публикации");
+        }
+        if (event.getStateEvent().equals(StateEvent.PENDING) && eventUpdateRequestDto.getStateAction()
+                .equals(StateAction.PUBLISH_EVENT)) {
+            event.setStateEvent(StateEvent.PUBLISHED);
+            event.setPublishedOn(LocalDateTime.now());
+        }
+        if (!event.getStateEvent().equals(StateEvent.PUBLISHED) && eventUpdateRequestDto.getStateAction()
+                .equals(StateAction.REJECT_EVENT)) {
+            event.setStateEvent(StateEvent.CANCELED);
+            event.setPublishedOn(null);
+        }
+        if (event.getStateEvent().equals(StateEvent.PUBLISHED) && eventUpdateRequestDto.getStateAction()
+                .equals(StateAction.REJECT_EVENT)) {
+            throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано ");
+        }
+        EventFullDto eventFullDto = EventMapper.eventFullDto(eventStorage.save(event), getCountConfirmedRequests(eventId).orElse(0));
+
+        return eventFullDto;
     }
 
     private void checkBeforeSaveNewEvent(NewEventDto newEventDto, Event event) {
@@ -318,7 +327,6 @@ public class EventServiseImpl implements EventService {
         if (newEventDto.getTitle() != null) {
             event.setTitle(newEventDto.getTitle());
         }
-
     }
 
     private User findUserbyId(Long id) {
@@ -353,6 +361,32 @@ public class EventServiseImpl implements EventService {
 
         return 0L;
     }
+//    @Override
+//    @Transactional
+//    public EventFullDto publishByAdmin(Long eventId) {
+//        Event event = findEventbyId(eventId);
+//        if (LocalDateTime.now().plusHours(1).isAfter(event.getEventDate())) {
+//            throw new ValidationException("Дата начала события должна быть не ранее " +
+//                    "чем за час от даты публикации.");
+//        }
+//        if (!event.getStateEvent().equals(StateEvent.PENDING)) {
+//            throw new ValidationException("событие должно быть в состоянии ожидания публикации");
+//        }
+//        event.setStateEvent(StateEvent.PUBLISHED);
+//        event.setPublishedOn(LocalDateTime.now());
+//
+//        return EventMapper.eventFullDto(eventStorage.save(event), 0);
+//    }
 
 
+    //    @Override
+//    @Transactional
+//    public EventFullDto rejectByAdmin(Long eventId) {
+//        Event event = findEventbyId(eventId);
+//        if (event.getStateEvent().equals(StateEvent.PUBLISHED)) {
+//            throw new ValidationException("Cобытие не должно быть опубликовано.");
+//        }
+//        event.setStateEvent(StateEvent.CANCELED);
+//        return EventMapper.eventFullDto(eventStorage.save(event), getCountConfirmedRequests(eventId).orElse(0));
+//    }
 }

@@ -11,6 +11,8 @@ import ru.practicum.main_service.category.dao.CategoryStorage;
 import ru.practicum.main_service.category.dto.CategoryDto;
 import ru.practicum.main_service.category.mapper.CategoryMapper;
 import ru.practicum.main_service.category.model.CategoryEvent;
+import ru.practicum.main_service.event.dao.EventStorage;
+import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
 
@@ -25,11 +27,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
-    CategoryStorage categoryStorage;
+    private CategoryStorage categoryStorage;
+    private EventStorage eventStorage;
 
     @Autowired
-    public CategoryServiceImpl(CategoryStorage categoryStorage) {
+    public CategoryServiceImpl(CategoryStorage categoryStorage, EventStorage eventStorage) {
         this.categoryStorage = categoryStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -42,9 +46,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto update(CategoryDto categoryDto) {
+    public CategoryDto update(Long catId, CategoryDto categoryDto) {
         verify(categoryDto);
-        CategoryEvent category = categoryStorage.findById(categoryDto.getId())
+        CategoryEvent category = categoryStorage.findById(catId)
                 .orElseThrow(() -> new NotFoundObjectException("Категория с id " + categoryDto.getId() + " не существует"));
         category.setName(categoryDto.getName());
         return CategoryMapper.toCategoryDto(categoryStorage.save(category));
@@ -55,6 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Long catId) {
         CategoryEvent category = categoryStorage.findById(catId)
                 .orElseThrow(() -> new NotFoundObjectException("Категория с id " + catId + " не существует"));
+        if(eventStorage.findByCategoryId(catId).isPresent()){
+            throw new ConflictException("Существуют события, связанные с категорией");
+        }
         categoryStorage.delete(category);
     }
 
