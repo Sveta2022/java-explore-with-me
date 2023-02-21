@@ -1,9 +1,7 @@
 package ru.practicum.main_service.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,10 +12,6 @@ import ru.practicum.main_service.event.service.EventService;
 
 import java.time.LocalDateTime;
 
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @WebMvcTest(controllers = AdminEventController.class)
@@ -64,18 +58,4 @@ class AdminEventControllerTest {
                 .views(2L)
                 .build();
     }
-
-//    @Test
-//    @SneakyThrows
-//    void publishByAdmin() {
-//        Long eventId = 1L;
-//        when(eventServise.publishByAdmin(eventId)).thenReturn(eventFullDto1);
-//        mockMvc.perform(patch("/admin/events/{eventId}/publish",eventId))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//        verify(eventServise,times(1)).publishByAdmin(eventId);
-//
-//    }
 }

@@ -19,8 +19,6 @@ public interface EventService {
 
     EventFullDto update(NewEventDto newEventDto, Long eventId);
 
-//    EventFullDto publishByAdmin(Long eventId);
-
     EventFullDto getEventByIdByCreator(Long userId, Long eventId);
 
     List<EventShortDto> getEventsWithFilter(String text, List<Long> categoriesId, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, int from, int size);
@@ -31,15 +29,11 @@ public interface EventService {
 
     List<EventFullDto> getEventsByParametrs(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size);
 
-//    EventFullDto rejectByAdmin(Long eventId);
-
     List<ParticipationRequestDto> getRequestEventByUser(Long userId, Long eventId);
 
     ParticipationRequestDto confirmRequestForEvent(Long userId, Long eventId, Long reqId);
 
-    EventRequestStatusUpdateResult UpdateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto);
-
-    EventFullDto cancelByCreator(Long userId, Long eventId);
+    EventRequestStatusUpdateResult updateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto);
 
     EventFullDto updateEventByAdmin(Long eventId, EventUpdateRequestDto eventUpdateRequestDto);
 }

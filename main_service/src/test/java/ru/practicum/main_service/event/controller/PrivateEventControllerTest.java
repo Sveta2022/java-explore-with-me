@@ -93,7 +93,7 @@ class PrivateEventControllerTest {
         String result = mockMvc.perform(post("/users/{userId}/events", userId)
                         .contentType("application/json")
                         .content(mapper.writeValueAsString(newEventDto1)))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();

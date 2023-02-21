@@ -12,7 +12,6 @@ import java.util.Set;
 @Builder
 public class NewCompilationDto {
 
-
     private Boolean pinned; //Закреплена ли подборка на главной странице сайта
     @NotBlank
     private String title;  //Заголовок подборки

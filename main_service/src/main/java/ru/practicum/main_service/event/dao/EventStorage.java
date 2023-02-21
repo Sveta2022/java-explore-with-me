@@ -2,7 +2,6 @@ package ru.practicum.main_service.event.dao;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.main_service.event.model.Event;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +16,7 @@ public interface EventStorage extends JpaRepository<Event, Long> {
     List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
     Event findByIdAndInitiatorId(Long eventId, Long userId);
+
     Optional<Event> findByCategoryId(Long catId);
 
     @Query(nativeQuery = true,
@@ -27,19 +27,6 @@ public interface EventStorage extends JpaRepository<Event, Long> {
                     "and e.paid = ?3 " +
                     "and e.state = ?4 ")
     Page<Event> findEvents(String text, List<Long> categoriesId, Boolean paid, String state, Pageable pageable);
-
-
-    @Modifying
-    @Query(nativeQuery = true,
-            value = "update events as e set views = e.views + 1 " +
-                    "where e.id = ?1 ")
-    void incrementView(Long id);
-
-    @Query(nativeQuery = true,
-            value = "select e.views from events as e " +
-                    "where e.id = ?1 ")
-    Long getViewByEventId(Long id);
-
 
     @Query(nativeQuery = true,
             value = "select * from events as e " +

@@ -33,25 +33,12 @@ public class AdminEventController {
         return eventService.update(newEventDto, eventId);
     }
 
-//    @PatchMapping("/{eventId}/publish")
-//    public EventFullDto publishByAdmin(@PathVariable @NotNull Long eventId) {
-//        log.info("Публикация события с id {} ", eventId);
-//        return eventService.publishByAdmin(eventId);
-//    }
-//
-//    @PatchMapping("/{eventId}/reject")
-//    public EventFullDto rejectByAdmin(@PathVariable @NotNull Long eventId) {
-//        log.info("Отклонение события с id {} ", eventId);
-//        return eventService.rejectByAdmin(eventId);
-//    }
-
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByAdmin(@PathVariable @NotNull Long eventId,
                                            @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
         log.info("Редактирование данных любого события администратором");
         return eventService.updateEventByAdmin(eventId, eventUpdateRequestDto);
     }
-
 
     @GetMapping
     public List<EventFullDto> getEventsByParametrs(@RequestParam(required = false) List<Long> users,

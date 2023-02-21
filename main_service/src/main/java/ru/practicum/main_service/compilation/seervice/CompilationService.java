@@ -15,13 +15,7 @@ public interface CompilationService {
 
     void removeCompilationById(Long compilationId);
 
-    void removeEventFromCompilation(Long compilationId, Long eventId);
-
-    CompilationDto addEventToCompilation(Long compilationId, Long eventId);
-
     CompilationDto pinnedOutCompilation(Long compId);
-
-    CompilationDto pinnedCompilation(Long compId);
 
     CompilationDto getCompilationDtoById(Long id);
 

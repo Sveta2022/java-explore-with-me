@@ -44,9 +44,7 @@ public class ErrorHandler {
                 .reason("The required object was found.")
                 .status(HttpStatus.NOT_FOUND)
                 .build();
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
-
     }
 
 
@@ -72,7 +70,6 @@ public class ErrorHandler {
                 .reason("Integrity constraint has been violated")
                 .status(HttpStatus.NOT_FOUND)
                 .build();
-
         return new ResponseEntity<>(apiError,
                 HttpStatus.CONFLICT);
     }

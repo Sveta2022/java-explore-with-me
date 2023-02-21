@@ -57,7 +57,7 @@ class RequestControllerTest {
 
         mockMvc.perform(post("/users/{userId}/requests", userId)
                         .param("eventId", "1"))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();

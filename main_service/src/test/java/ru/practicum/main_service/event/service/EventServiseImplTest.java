@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import ru.practicum.client.EventClient;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.event.dao.EventStorage;
@@ -20,7 +19,7 @@ import ru.practicum.main_service.event.dto.EventShortDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
-import ru.practicum.main_service.exception.ValidationException;
+import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.requests.dao.RequestStorage;
 import ru.practicum.main_service.requests.model.RequestEventStatus;
 import ru.practicum.main_service.user.dao.UserStorage;
@@ -51,9 +50,6 @@ class EventServiseImplTest {
     private RequestStorage requestStorage;
     @Mock
     private EventClient eventClient;
-    @Mock
-    private RestTemplate rest;
-
     private User user1;
     private NewEventDto newEventDto1;
     private Event event1;
@@ -113,10 +109,10 @@ class EventServiseImplTest {
     void create_with_not_valid_date() {
         newEventDto1.setEventDate("2022-12-12 15:30:00");
         when(userStorage.findById(user1.getId())).thenReturn(Optional.of(user1));
-        ValidationException validationException = assertThrows(ValidationException.class,
+        ConflictException conflictException = assertThrows(ConflictException.class,
                 () -> eventServise.create(1L, newEventDto1));
         assertEquals("дата и время на которые намечено событие не может быть раньше, " +
-                "чем через два часа от текущего момента", validationException.getMessage());
+                "чем через два часа от текущего момента", conflictException.getMessage());
     }
 
     @Test
@@ -180,36 +176,6 @@ class EventServiseImplTest {
 
     }
 
-//    @Test
-//    void publishByAdmin() {
-//        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
-//        when(eventStorage.save(any())).thenReturn(event1);
-//        event1.setStateEvent(StateEvent.PENDING);
-//        eventServise.publishByAdmin(event1.getId());
-//        assertEquals(StateEvent.PUBLISHED, event1.getStateEvent());
-//    }
-
-//    @Test
-//    void publishByAdmin_with_wrong_event_date() {
-//        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
-//        event1.setEventDate(LocalDateTime.of(2022, 11, 12, 15, 30, 00));
-//        ValidationException validationException = assertThrows(ValidationException.class,
-//                () -> eventServise.publishByAdmin(event1.getId()));
-//        assertEquals("Дата начала события должна быть не ранее " +
-//                "чем за час от даты публикации.", validationException.getMessage());
-//
-//    }
-
-//    @Test
-//    void publishByAdmin_with_wrong_StateEvent() {
-//        when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
-//        event1.setStateEvent(StateEvent.PUBLISHED);
-//        ValidationException validationException = assertThrows(ValidationException.class,
-//                () -> eventServise.publishByAdmin(event1.getId()));
-//        assertEquals("событие должно быть в состоянии ожидания публикации", validationException.getMessage());
-//
-//    }
-
     @Test
     void getEventByIdByCreator() {
         when(eventStorage.findByIdAndInitiatorId(anyLong(), anyLong())).thenReturn(event1);
@@ -244,8 +210,8 @@ class EventServiseImplTest {
     void getEventById_with_wrong_StateEvent() {
         when(eventStorage.findById(event1.getId())).thenReturn(Optional.of(event1));
         event1.setStateEvent(StateEvent.PENDING);
-        ValidationException validationException = assertThrows(ValidationException.class,
+        ConflictException conflictException = assertThrows(ConflictException.class,
                 () -> eventServise.getEventById(event1.getId()));
-        assertEquals("Cобытие должно быть опубликовано", validationException.getMessage());
+        assertEquals("Cобытие должно быть опубликовано", conflictException.getMessage());
     }
 }

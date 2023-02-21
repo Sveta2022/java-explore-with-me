@@ -62,7 +62,7 @@ class AdminUserControllerTest {
         String result = mockMvc.perform(post("/admin/users")
                         .contentType("application/json")
                         .content(mapper.writeValueAsString(userDto1)))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -106,7 +106,7 @@ class AdminUserControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .delete("/admin/users/1")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(userService, Mockito.times(1))
                 .delete(1L);

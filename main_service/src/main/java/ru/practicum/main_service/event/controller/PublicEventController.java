@@ -21,7 +21,6 @@ public class PublicEventController {
     private final EventService eventService;
     private final EventClient eventClient;
 
-
     @GetMapping
     public List<EventShortDto> getEvents(@RequestParam(name = "text", required = false) String text, //текст для поиска в содержимом аннотации и подробном описании события
                                          @RequestParam(name = "categories", required = false) List<Long> categoriesId, //список идентификаторов категорий в которых будет вестись поиск

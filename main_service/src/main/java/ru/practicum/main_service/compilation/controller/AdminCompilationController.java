@@ -43,45 +43,11 @@ public class AdminCompilationController {
         compilationService.removeCompilationById(compId);
     }
 
-//    @DeleteMapping("/{compId}/events/{eventId}")
-//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-//    public void removeEventFromCompilation(@PathVariable @NotNull Long compId,
-//                                           @PathVariable @NotNull Long eventId) {
-//
-//        log.info("Удалить событие по id = {} из подборки c id = {}", eventId, compId);
-//        compilationService.removeEventFromCompilation(compId, eventId);
-//    }
-
-//    @PatchMapping("/{compId}/events/{eventId}")
-//    public CompilationDto addEventInCompilation(@PathVariable @NotNull Long compId,
-//                                                @PathVariable @NotNull Long eventId) {
-//
-//        log.info("Добавить событие по id = {} в подборку c id = {}", eventId, compId);
-//        return compilationService.addEventToCompilation(compId, eventId);
-//    }
-
-//    @DeleteMapping("/{compId}/pin")
-//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-//    public CompilationDto pinnedOutCompilation(@PathVariable @NotNull Long compId) {
-//
-//        log.info("Открепить подборку на главной странице с id = {}", compId);
-//        return compilationService.pinnedOutCompilation(compId);
-//    }
-//
-//    @PatchMapping("/{compId}")
-//    public CompilationDto pinnedCompilation(@PathVariable @NotNull Long compId) {
-//
-//        log.info("Закрепить подборку на главной странице с id = {}", compId);
-//        return compilationService.pinnedCompilation(compId);
-//    }
-
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(@PathVariable Long compId,
                                             @RequestBody NewCompilationDto newCompilationDto
-    ){
+    ) {
         log.info("Обновить информацию о подборке с id = {}", compId);
         return compilationService.updateCompilation(compId, newCompilationDto);
     }
-
-
 }

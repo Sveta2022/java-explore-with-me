@@ -72,6 +72,4 @@ public class Event {
 
     @Column(name = "views")
     private Long views = 0L;  //Количество просмотрев события
-
-
 }

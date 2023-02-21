@@ -89,7 +89,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static NewEventDto newEventDto(EventUpdateRequestDto eventUpdateRequestDto){
+    public static NewEventDto newEventDto(EventUpdateRequestDto eventUpdateRequestDto) {
         return NewEventDto.builder()
                 .eventId(eventUpdateRequestDto.getEventId())
                 .annotation(eventUpdateRequestDto.getAnnotation())

@@ -10,7 +10,6 @@ import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
-import ru.practicum.main_service.exception.ValidationException;
 import ru.practicum.main_service.requests.dao.RequestStorage;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
 import ru.practicum.main_service.requests.mapper.RequestMapper;

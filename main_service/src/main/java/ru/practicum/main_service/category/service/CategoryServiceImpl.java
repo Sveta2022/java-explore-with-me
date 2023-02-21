@@ -12,7 +12,6 @@ import ru.practicum.main_service.category.dto.CategoryDto;
 import ru.practicum.main_service.category.mapper.CategoryMapper;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.event.dao.EventStorage;
-import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
 
@@ -39,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto create(CategoryDto categoryDto) {
-        verify(categoryDto);
+        checkBeforeSave(categoryDto);
         CategoryEvent categoryEvent = CategoryMapper.toCategory(categoryDto);
         return CategoryMapper.toCategoryDto(categoryStorage.save(categoryEvent));
     }
@@ -47,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto update(Long catId, CategoryDto categoryDto) {
-        verify(categoryDto);
+        checkBeforeSave(categoryDto);
         CategoryEvent category = categoryStorage.findById(catId)
                 .orElseThrow(() -> new NotFoundObjectException("Категория с id " + categoryDto.getId() + " не существует"));
         category.setName(categoryDto.getName());
@@ -59,7 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Long catId) {
         CategoryEvent category = categoryStorage.findById(catId)
                 .orElseThrow(() -> new NotFoundObjectException("Категория с id " + catId + " не существует"));
-        if(eventStorage.findByCategoryId(catId).isPresent()){
+        if (eventStorage.findByCategoryId(catId).isPresent()) {
             throw new ConflictException("Существуют события, связанные с категорией");
         }
         categoryStorage.delete(category);
@@ -68,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getById(Long catId) {
         CategoryEvent category = categoryStorage.findById(catId)
-                        .orElseThrow(() -> new NotFoundObjectException("Категория с id " + catId + " не существует"));
+                .orElseThrow(() -> new NotFoundObjectException("Категория с id " + catId + " не существует"));
         return CategoryMapper.toCategoryDto(category);
     }
 
@@ -80,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
-    private void verify(CategoryDto categoryDto) {
+    private void checkBeforeSave(CategoryDto categoryDto) {
         String name = categoryDto.getName();
         if (categoryStorage.findByName(name) != null) {
             throw new ConflictException("Имя " + categoryDto.getName() + " уже существует");

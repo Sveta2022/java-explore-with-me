@@ -75,46 +75,10 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public void removeEventFromCompilation(Long compilationId, Long eventId) {
-
-        Compilation compilation = getCompilationById(compilationId);
-        Event event = eventStorage.findById(eventId).orElseThrow(() ->
-                new NotFoundObjectException("Событие с id " + eventId + " не найдено"));
-
-        Set<Event> events = compilation.getEvents();
-        events.remove(event);
-        compilationStorage.save(compilation);
-    }
-
-    @Override
-    @Transactional
-    public CompilationDto addEventToCompilation(Long compilationId, Long eventId) {
-
-        Compilation compilation = getCompilationById(compilationId);
-        Event event = getEventbyId(eventId);
-
-        Set<Event> events = compilation.getEvents();
-        events.add(event);
-        return CompilationMapper.toCompilDto(compilationStorage.save(compilation));
-    }
-
-    @Override
-    @Transactional
     public CompilationDto pinnedOutCompilation(Long compId) {
 
         Compilation compilation = getCompilationById(compId);
         compilation.setPinned(false);
-        compilationStorage.save(compilation);
-
-        return CompilationMapper.toCompilDto(compilation);
-    }
-
-    @Override
-    @Transactional
-    public CompilationDto pinnedCompilation(Long compId) {
-
-        Compilation compilation = getCompilationById(compId);
-        compilation.setPinned(true);
         compilationStorage.save(compilation);
 
         return CompilationMapper.toCompilDto(compilation);
@@ -131,13 +95,13 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public CompilationDto updateCompilation(Long compId, NewCompilationDto newCompilationDto) {
         Compilation compilation = getCompilationById(compId);
-        if(newCompilationDto.getPinned() != null){
+        if (newCompilationDto.getPinned() != null) {
             compilation.setPinned(newCompilationDto.getPinned());
         }
-        if(newCompilationDto.getTitle() != null){
+        if (newCompilationDto.getTitle() != null) {
             compilation.setTitle(newCompilationDto.getTitle());
         }
-        if(newCompilationDto.getEvents() != null){
+        if (newCompilationDto.getEvents() != null) {
             compilation.setEvents(newCompilationDto.getEvents().stream()
                     .map(this::getEventbyId).collect(Collectors.toSet()));
         }

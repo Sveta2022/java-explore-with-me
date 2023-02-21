@@ -45,5 +45,4 @@ public class RequestController {
         log.info("Отмена своего запроса c id = {} на участие в событии ", requestId);
         return requestService.cancelRequest(userId, requestId);
     }
-
 }

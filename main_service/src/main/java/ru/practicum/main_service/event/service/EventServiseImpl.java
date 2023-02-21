@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.EventClient;
-import ru.practicum.main_service.category.dao.CategoryStorage;
 import ru.practicum.main_service.category.model.CategoryEvent;
 import ru.practicum.main_service.event.dao.EventStorage;
 import ru.practicum.main_service.event.dto.*;
@@ -43,7 +42,6 @@ public class EventServiseImpl implements EventService {
     private final EventStorage eventStorage;
     private final UserStorage userStorage;
     private final RequestStorage requestStorage;
-    private final CategoryStorage categoryStorage;
     private final EventClient eventClient;
 
 
@@ -60,7 +58,6 @@ public class EventServiseImpl implements EventService {
 
         return EventMapper.eventFullDto(eventStorage.save(event), 0);
     }
-
 
     @Override
     public List<EventShortDto> getAllEventsByUser(Long userId, int from, int size) {
@@ -140,7 +137,6 @@ public class EventServiseImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public EventFullDto getEventById(Long id) {
@@ -158,7 +154,7 @@ public class EventServiseImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateByCreator(Long userId,Long eventId, EventUpdateRequestDto eventUpdateRequestDto) {
+    public EventFullDto updateByCreator(Long userId, Long eventId, EventUpdateRequestDto eventUpdateRequestDto) {
 
         Event event = findEventbyId(eventId);
 
@@ -170,22 +166,22 @@ public class EventServiseImpl implements EventService {
             NewEventDto newEventDto = EventMapper.newEventDto(eventUpdateRequestDto);
             checkBeforeSaveNewEvent(newEventDto, event);
 
-        if (LocalDateTime.now().plusHours(2).isAfter(event.getEventDate())) {
-            throw new ConflictException("дата и время на которые намечено событие не может быть раньше, " +
-                    "чем через два часа от текущего момента");
-        }
-        switch (eventUpdateRequestDto.getStateAction()){
-            case SEND_TO_REVIEW:
-                event.setStateEvent(StateEvent.PENDING);
-                break;
-            case CANCEL_REVIEW:
-                event.setStateEvent(StateEvent.CANCELED);
-                break;
-        }
-        EventFullDto eventFullDtoReturn = EventMapper.eventFullDto(eventStorage.save(event),
-                getCountConfirmedRequests(event.getId()).orElse(0));
-        return eventFullDtoReturn;
-        } else{
+            if (LocalDateTime.now().plusHours(2).isAfter(event.getEventDate())) {
+                throw new ConflictException("дата и время на которые намечено событие не может быть раньше, " +
+                        "чем через два часа от текущего момента");
+            }
+            switch (eventUpdateRequestDto.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    event.setStateEvent(StateEvent.PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    event.setStateEvent(StateEvent.CANCELED);
+                    break;
+            }
+            EventFullDto eventFullDtoReturn = EventMapper.eventFullDto(eventStorage.save(event),
+                    getCountConfirmedRequests(event.getId()).orElse(0));
+            return eventFullDtoReturn;
+        } else {
             throw new ConflictException("изменить можно только отмененные события или события " +
                     "в состоянии ожидания модерации");
         }
@@ -206,13 +202,9 @@ public class EventServiseImpl implements EventService {
         } else {
             end = LocalDateTime.parse(rangeEnd, FORMATTER);
         }
-
-
         List<Event> events = eventStorage.findEventsByAdmin(users, states, categories, start, end, pageable);
-
         List<EventFullDto> eventFullDtos = events.stream().map(event ->
                 EventMapper.eventFullDto(event, getCountConfirmedRequests(event.getId()).orElse(0))).collect(Collectors.toList());
-
         return eventFullDtos;
     }
 
@@ -245,11 +237,11 @@ public class EventServiseImpl implements EventService {
 
     @Override
     @Transactional
-    public EventRequestStatusUpdateResult UpdateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto) {
+    public EventRequestStatusUpdateResult updateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto) {
         Event event = findEventbyId(eventId);
-        List<Long>requestIds = participationRequestDto.getRequestIds();
-        List<ParticipationRequest>requests = findAllRequestById(requestIds);
-        if(event.getParticipantLimit()==0 || !event.isRequestModeration()){
+        List<Long> requestIds = participationRequestDto.getRequestIds();
+        List<ParticipationRequest> requests = findAllRequestById(requestIds);
+        if (event.getParticipantLimit() == 0 || !event.isRequestModeration()) {
             return null;
         }
         if (!event.getInitiator().getId().equals(userId)) {
@@ -259,17 +251,16 @@ public class EventServiseImpl implements EventService {
                 <= getCountConfirmedRequests(eventId).orElse(0)) {
             throw new ConflictException("достигнут лимит по заявкам на данное событие");
         }
-        for (ParticipationRequest request: requests){
-            if(!request.getStatus().equals(RequestEventStatus.PENDING)){
+        for (ParticipationRequest request : requests) {
+            if (!request.getStatus().equals(RequestEventStatus.PENDING)) {
                 throw new ConflictException("статус можно изменить только у заявок, находящихся в состоянии ожидания");
             }
         }
-
-        List<ParticipationRequestDto>confirmRequest = new ArrayList<>();
-        List<ParticipationRequestDto>rejectRequest = new ArrayList<>();
-        switch (participationRequestDto.getStatus()){
+        List<ParticipationRequestDto> confirmRequest = new ArrayList<>();
+        List<ParticipationRequestDto> rejectRequest = new ArrayList<>();
+        switch (participationRequestDto.getStatus()) {
             case CONFIRMED:
-                for (ParticipationRequest request: requests){
+                for (ParticipationRequest request : requests) {
                     if (event.getParticipantLimit()
                             <= getCountConfirmedRequests(eventId).orElse(0)) {
                         request.setStatus(RequestEventStatus.REJECTED);
@@ -282,24 +273,16 @@ public class EventServiseImpl implements EventService {
                 }
                 break;
             case REJECTED:
-                for (ParticipationRequest request: requests){
+                for (ParticipationRequest request : requests) {
                     request.setStatus(RequestEventStatus.REJECTED);
                     requestStorage.save(request);
                     rejectRequest.add(RequestMapper.toRequestEventDto(request));
                 }
         }
-      return EventRequestStatusUpdateResult.builder()
-               .confirmedRequests(confirmRequest)
-               .rejectedRequests(rejectRequest)
-               .build();
-    }
-
-    @Override
-    @Transactional
-    public EventFullDto cancelByCreator(Long userId, Long eventId) {
-        Event event = findEventbyId(eventId);
-        event.setStateEvent(StateEvent.CANCELED);
-        return EventMapper.eventFullDto(event, getCountConfirmedRequests(eventId).orElse(0));
+        return EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(confirmRequest)
+                .rejectedRequests(rejectRequest)
+                .build();
     }
 
     @Override
@@ -381,16 +364,11 @@ public class EventServiseImpl implements EventService {
                 .orElseThrow(() -> new NotFoundObjectException("Событие с id " + id + " не найдено"));
     }
 
-    private CategoryEvent findCategory(Long id) {
-        return categoryStorage.findById(id)
-                .orElseThrow(() -> new NotFoundObjectException("Категория с id " + id + " не найдена"));
-    }
-
     private ParticipationRequest findRequestById(Long reqId) {
         return requestStorage.findById(reqId).orElseThrow(() -> new NotFoundObjectException("Реквест с id " + reqId + " не найдена"));
     }
 
-    private List<ParticipationRequest>findAllRequestById(List<Long>requestIds){
+    private List<ParticipationRequest> findAllRequestById(List<Long> requestIds) {
         return requestStorage.findAllById(requestIds);
     }
 
@@ -404,7 +382,6 @@ public class EventServiseImpl implements EventService {
         if (Objects.equals(responseEntity.getBody(), "")) {
             return ((Map<String, Long>) responseEntity.getBody()).get("hits");
         }
-
         return 0L;
     }
 
@@ -412,32 +389,4 @@ public class EventServiseImpl implements EventService {
         return Optional.of(requestStorage.countParticipationRequestByEventIdAndStatus(eventId,
                 RequestEventStatus.CONFIRMED));
     }
-//    @Override
-//    @Transactional
-//    public EventFullDto publishByAdmin(Long eventId) {
-//        Event event = findEventbyId(eventId);
-//        if (LocalDateTime.now().plusHours(1).isAfter(event.getEventDate())) {
-//            throw new ValidationException("Дата начала события должна быть не ранее " +
-//                    "чем за час от даты публикации.");
-//        }
-//        if (!event.getStateEvent().equals(StateEvent.PENDING)) {
-//            throw new ValidationException("событие должно быть в состоянии ожидания публикации");
-//        }
-//        event.setStateEvent(StateEvent.PUBLISHED);
-//        event.setPublishedOn(LocalDateTime.now());
-//
-//        return EventMapper.eventFullDto(eventStorage.save(event), 0);
-//    }
-
-
-    //    @Override
-//    @Transactional
-//    public EventFullDto rejectByAdmin(Long eventId) {
-//        Event event = findEventbyId(eventId);
-//        if (event.getStateEvent().equals(StateEvent.PUBLISHED)) {
-//            throw new ValidationException("Cобытие не должно быть опубликовано.");
-//        }
-//        event.setStateEvent(StateEvent.CANCELED);
-//        return EventMapper.eventFullDto(eventStorage.save(event), getCountConfirmedRequests(eventId).orElse(0));
-//    }
 }

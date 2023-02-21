@@ -42,7 +42,6 @@ public class PrivateEventController {
     public List<EventShortDto> getAllEventsByUser(@PathVariable Long userId,
                                                   @RequestParam(defaultValue = "0") int from,
                                                   @RequestParam(name = "size", defaultValue = "10") int size) {
-
         log.info("Получение событий, добавленных текущим пользователем с id = {}", userId);
         return eventService.getAllEventsByUser(userId, from, size);
     }
@@ -78,7 +77,6 @@ public class PrivateEventController {
                                                           @PathVariable Long reqId) {
         log.info("Подтверждение чужой заявки на участие в событии текущего пользователя {} {} {}", reqId, userId, eventId);
         return eventService.confirmRequestForEvent(userId, eventId, reqId);
-
     }
 
     @PatchMapping("/{eventId}/requests")
@@ -86,6 +84,6 @@ public class PrivateEventController {
                                                                 @PathVariable Long eventId,
                                                                 @RequestBody ParticipationRequestStatusUpdate participationRequestDto) {
         log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} ", userId);
-        return eventService.UpdateRequestStatusForEvent(userId, eventId, participationRequestDto);
+        return eventService.updateRequestStatusForEvent(userId, eventId, participationRequestDto);
     }
 }
