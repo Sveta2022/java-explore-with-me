@@ -1,5 +1,6 @@
 package ru.practicum.controller;
 
+import org.springframework.http.HttpStatus;
 import ru.practicum.dto.EndpointHitDto;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Сохранение информации о том, что к эндпоинту был запрос по uri {}", endpointHitDto.getUri());
         statsService.create(endpointHitDto);
