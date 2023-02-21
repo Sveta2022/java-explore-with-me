@@ -24,4 +24,6 @@ public interface CompilationService {
     CompilationDto pinnedCompilation(Long compId);
 
     CompilationDto getCompilationDtoById(Long id);
+
+    CompilationDto updateCompilation(Long compId, NewCompilationDto newCompilationDto);
 }

@@ -5,7 +5,9 @@ import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
 import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
+import ru.practicum.main_service.requests.dto.EventRequestStatusUpdateResult;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
+import ru.practicum.main_service.requests.dto.ParticipationRequestStatusUpdate;
 
 import java.util.List;
 
@@ -35,7 +37,7 @@ public interface EventService {
 
     ParticipationRequestDto confirmRequestForEvent(Long userId, Long eventId, Long reqId);
 
-    ParticipationRequestDto rejectRequestForEvent(Long userId, Long eventId, Long reqId);
+    EventRequestStatusUpdateResult UpdateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto);
 
     EventFullDto cancelByCreator(Long userId, Long eventId);
 

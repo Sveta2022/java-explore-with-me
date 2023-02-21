@@ -127,6 +127,23 @@ public class CompilationServiceImpl implements CompilationService {
         return CompilationMapper.toCompilDto(compilation);
     }
 
+    @Override
+    @Transactional
+    public CompilationDto updateCompilation(Long compId, NewCompilationDto newCompilationDto) {
+        Compilation compilation = getCompilationById(compId);
+        if(newCompilationDto.getPinned() != null){
+            compilation.setPinned(newCompilationDto.getPinned());
+        }
+        if(newCompilationDto.getTitle() != null){
+            compilation.setTitle(newCompilationDto.getTitle());
+        }
+        if(newCompilationDto.getEvents() != null){
+            compilation.setEvents(newCompilationDto.getEvents().stream()
+                    .map(this::getEventbyId).collect(Collectors.toSet()));
+        }
+        return CompilationMapper.toCompilDto(compilationStorage.save(compilation));
+    }
+
     private Compilation getCompilationById(Long id) {
 
         return compilationStorage

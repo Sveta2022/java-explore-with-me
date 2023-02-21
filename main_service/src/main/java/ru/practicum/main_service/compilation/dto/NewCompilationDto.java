@@ -11,8 +11,11 @@ import java.util.Set;
 @Setter
 @Builder
 public class NewCompilationDto {
-    private Boolean pinned;
+
+
+    private Boolean pinned; //Закреплена ли подборка на главной странице сайта
     @NotBlank
-    private String title;
-    private Set<Long> events;
+    private String title;  //Заголовок подборки
+    private Set<Long> events;  //Список id событий подборки для полной замены текущего списка
+
 }

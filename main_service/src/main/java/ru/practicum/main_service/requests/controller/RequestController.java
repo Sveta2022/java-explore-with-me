@@ -3,6 +3,7 @@ package ru.practicum.main_service.requests.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
 import ru.practicum.main_service.requests.service.RequestService;
@@ -24,6 +25,7 @@ public class RequestController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addRequest(@PathVariable @NotNull Long userId,
                                               @RequestParam Long eventId) {
         log.info("Запрос на участие в событии создан пользователь с id = {} для события с id = {}", userId, eventId);

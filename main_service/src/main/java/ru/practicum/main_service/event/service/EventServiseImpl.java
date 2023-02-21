@@ -18,7 +18,9 @@ import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.NotFoundObjectException;
 import ru.practicum.main_service.requests.dao.RequestStorage;
+import ru.practicum.main_service.requests.dto.EventRequestStatusUpdateResult;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
+import ru.practicum.main_service.requests.dto.ParticipationRequestStatusUpdate;
 import ru.practicum.main_service.requests.mapper.RequestMapper;
 import ru.practicum.main_service.requests.model.ParticipationRequest;
 import ru.practicum.main_service.requests.model.RequestEventStatus;
@@ -154,11 +156,6 @@ public class EventServiseImpl implements EventService {
 
     }
 
-    private Optional<Integer> getCountConfirmedRequests(Long eventId) {
-        return Optional.of(requestStorage.countParticipationRequestByEventIdAndStatus(eventId,
-                RequestEventStatus.CONFIRMED));
-    }
-
     @Override
     @Transactional
     public EventFullDto updateByCreator(Long userId,Long eventId, EventUpdateRequestDto eventUpdateRequestDto) {
@@ -168,24 +165,30 @@ public class EventServiseImpl implements EventService {
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Событие может изменить только текущий пользователь");
         }
-        if (event.getStateEvent().equals(StateEvent.PUBLISHED)) {
-            throw new ConflictException("изменить можно только отмененные события или события " +
-                    "в состоянии ожидания модерации");
-        }
+        if (!event.getStateEvent().equals(StateEvent.PUBLISHED)) {
 
-        if (event.getStateEvent().equals(StateEvent.CANCELED)) {
-            event.setStateEvent(StateEvent.PENDING);
-        }
-        NewEventDto newEventDto = EventMapper.newEventDto(eventUpdateRequestDto);
-        checkBeforeSaveNewEvent(newEventDto, event);
+            NewEventDto newEventDto = EventMapper.newEventDto(eventUpdateRequestDto);
+            checkBeforeSaveNewEvent(newEventDto, event);
+
         if (LocalDateTime.now().plusHours(2).isAfter(event.getEventDate())) {
             throw new ConflictException("дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
-
+        switch (eventUpdateRequestDto.getStateAction()){
+            case SEND_TO_REVIEW:
+                event.setStateEvent(StateEvent.PENDING);
+                break;
+            case CANCEL_REVIEW:
+                event.setStateEvent(StateEvent.CANCELED);
+                break;
+        }
         EventFullDto eventFullDtoReturn = EventMapper.eventFullDto(eventStorage.save(event),
                 getCountConfirmedRequests(event.getId()).orElse(0));
         return eventFullDtoReturn;
+        } else{
+            throw new ConflictException("изменить можно только отмененные события или события " +
+                    "в состоянии ожидания модерации");
+        }
     }
 
     @Override
@@ -242,14 +245,53 @@ public class EventServiseImpl implements EventService {
 
     @Override
     @Transactional
-    public ParticipationRequestDto rejectRequestForEvent(Long userId, Long eventId, Long reqId) {
+    public EventRequestStatusUpdateResult UpdateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto) {
         Event event = findEventbyId(eventId);
-        ParticipationRequest request = findRequestById(reqId);
+        List<Long>requestIds = participationRequestDto.getRequestIds();
+        List<ParticipationRequest>requests = findAllRequestById(requestIds);
+        if(event.getParticipantLimit()==0 || !event.isRequestModeration()){
+            return null;
+        }
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Подтвердить запрос на участие в событие доступен только владельцу аккаунта");
         }
-        request.setStatus(RequestEventStatus.REJECTED);
-        return RequestMapper.toRequestEventDto(requestStorage.save(request));
+        if (event.getParticipantLimit()
+                <= getCountConfirmedRequests(eventId).orElse(0)) {
+            throw new ConflictException("достигнут лимит по заявкам на данное событие");
+        }
+        for (ParticipationRequest request: requests){
+            if(!request.getStatus().equals(RequestEventStatus.PENDING)){
+                throw new ConflictException("статус можно изменить только у заявок, находящихся в состоянии ожидания");
+            }
+        }
+
+        List<ParticipationRequestDto>confirmRequest = new ArrayList<>();
+        List<ParticipationRequestDto>rejectRequest = new ArrayList<>();
+        switch (participationRequestDto.getStatus()){
+            case CONFIRMED:
+                for (ParticipationRequest request: requests){
+                    if (event.getParticipantLimit()
+                            <= getCountConfirmedRequests(eventId).orElse(0)) {
+                        request.setStatus(RequestEventStatus.REJECTED);
+                        requestStorage.save(request);
+                        rejectRequest.add(RequestMapper.toRequestEventDto(request));
+                    }
+                    request.setStatus(RequestEventStatus.CONFIRMED);
+                    requestStorage.save(request);
+                    confirmRequest.add(RequestMapper.toRequestEventDto(request));
+                }
+                break;
+            case REJECTED:
+                for (ParticipationRequest request: requests){
+                    request.setStatus(RequestEventStatus.REJECTED);
+                    requestStorage.save(request);
+                    rejectRequest.add(RequestMapper.toRequestEventDto(request));
+                }
+        }
+      return EventRequestStatusUpdateResult.builder()
+               .confirmedRequests(confirmRequest)
+               .rejectedRequests(rejectRequest)
+               .build();
     }
 
     @Override
@@ -348,6 +390,10 @@ public class EventServiseImpl implements EventService {
         return requestStorage.findById(reqId).orElseThrow(() -> new NotFoundObjectException("Реквест с id " + reqId + " не найдена"));
     }
 
+    private List<ParticipationRequest>findAllRequestById(List<Long>requestIds){
+        return requestStorage.findAllById(requestIds);
+    }
+
     private Long getViews(long eventId) {
         ResponseEntity<Object> responseEntity = eventClient.getViews(
                 LocalDateTime.of(2020, 9, 1, 0, 0),
@@ -360,6 +406,11 @@ public class EventServiseImpl implements EventService {
         }
 
         return 0L;
+    }
+
+    private Optional<Integer> getCountConfirmedRequests(Long eventId) {
+        return Optional.of(requestStorage.countParticipationRequestByEventIdAndStatus(eventId,
+                RequestEventStatus.CONFIRMED));
     }
 //    @Override
 //    @Transactional

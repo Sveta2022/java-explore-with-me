@@ -11,7 +11,9 @@ import ru.practicum.main_service.event.dto.EventShortDto;
 import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
 import ru.practicum.main_service.event.dto.NewEventDto;
 import ru.practicum.main_service.event.service.EventService;
+import ru.practicum.main_service.requests.dto.EventRequestStatusUpdateResult;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
+import ru.practicum.main_service.requests.dto.ParticipationRequestStatusUpdate;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -61,15 +63,6 @@ public class PrivateEventController {
         return eventService.getEventByIdByCreator(userId, eventId);
     }
 
-//    @PatchMapping("{eventId}")
-//    public EventFullDto cancelByCreator(@PathVariable Long userId,
-//                                        @PathVariable Long eventId) {
-//        log.info("Отмена события c id = {}, добавленного текущим пользователем c id = {}", eventId, userId);
-//        return eventService.cancelByCreator(userId, eventId);
-//
-//    }
-
-
     @PatchMapping("{eventId}")
     public EventFullDto updateByCreator(@PathVariable Long userId,
                                         @PathVariable Long eventId,
@@ -89,19 +82,10 @@ public class PrivateEventController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    public ParticipationRequestDto deleteRequestForEvent(@PathVariable Long userId,
-                                                         @PathVariable Long eventId,
-                                                         @RequestBody ParticipationRequestDto participationRequestDto) {
+    public EventRequestStatusUpdateResult changeRequestForEvent(@PathVariable Long userId,
+                                                                @PathVariable Long eventId,
+                                                                @RequestBody ParticipationRequestStatusUpdate participationRequestDto) {
         log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} ", userId);
-        return ParticipationRequestDto.builder().build();
+        return eventService.UpdateRequestStatusForEvent(userId, eventId, participationRequestDto);
     }
-
-//    @PatchMapping("/{eventId}/requests/{reqId}/cancel")
-//    public ParticipationRequestDto rejectRequestForEvent(@PathVariable Long userId,
-//                                                         @PathVariable Long eventId,
-//                                                         @PathVariable Long reqId) {
-//        log.info("Отклонение чужой заявки на участие в событии текущего пользователя {} {}", reqId, userId);
-//        return eventService.rejectRequestForEvent(userId, eventId, reqId);
-//    }
-
 }
