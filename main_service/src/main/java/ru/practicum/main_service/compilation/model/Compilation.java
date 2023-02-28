@@ -6,6 +6,7 @@ import ru.practicum.main_service.event.model.Event;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Getter
@@ -29,6 +30,7 @@ public class Compilation {
 
     @NotBlank
     @Column(name = "title")
+    @Size(min = 3, max = 120)
     private String title;   //Заголовок подборки
 
     @ManyToMany

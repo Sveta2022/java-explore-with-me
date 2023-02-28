@@ -7,6 +7,7 @@ import ru.practicum.main_service.user.model.Location;
 import ru.practicum.main_service.user.model.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,9 +26,11 @@ public class Event {
     private Long id;
 
     @Column(name = "title")
+    @Size(min = 3, max = 120)
     private String title;  // Заголовок
 
     @Column(name = "annotation")
+    @Size(min = 20, max = 2000)
     private String annotation;  //Краткое описание
 
     @ManyToOne
@@ -35,6 +38,7 @@ public class Event {
     private CategoryEvent category;  //Категория
 
     @Column(name = "description")
+    @Size(min = 20, max = 7000)
     private String description;  //Полное описание события
 
     @Column(name = "event_date")

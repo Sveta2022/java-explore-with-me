@@ -4,6 +4,7 @@ package ru.practicum.main_service.user.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Setter
 @Getter
@@ -20,6 +21,7 @@ public class User {
     private Long id;
 
     @Column(name = "name", nullable = false)
+    @Size(min = 1, max = 255)
     private String name;
 
     @Column(name = "email", unique = true)

@@ -21,19 +21,22 @@ public interface EventService {
 
     EventFullDto getEventByIdByCreator(Long userId, Long eventId);
 
-    List<EventShortDto> getEventsWithFilter(String text, List<Long> categoriesId, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, int from, int size);
+    List<EventShortDto> getEventsWithFilter(String text, List<Long> categoriesId, Boolean paid, String rangeStart,
+                                            String rangeEnd, Boolean onlyAvailable, String sort, int from, int size);
 
     EventFullDto getEventById(Long id);
 
     EventFullDto updateByCreator(Long userId, Long eventId, EventUpdateRequestDto eventUpdateRequestDto);
 
-    List<EventFullDto> getEventsByParametrs(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size);
+    List<EventFullDto> getEventsByParametrs(List<Long> users, List<String> states, List<Long> categories,
+                                            String rangeStart, String rangeEnd, Integer from, Integer size);
 
     List<ParticipationRequestDto> getRequestEventByUser(Long userId, Long eventId);
 
     ParticipationRequestDto confirmRequestForEvent(Long userId, Long eventId, Long reqId);
 
-    EventRequestStatusUpdateResult updateRequestStatusForEvent(Long userId, Long eventId, ParticipationRequestStatusUpdate participationRequestDto);
+    EventRequestStatusUpdateResult updateRequestStatusForEvent(Long userId, Long eventId,
+                                                               ParticipationRequestStatusUpdate participationRequestDto);
 
     EventFullDto updateEventByAdmin(Long eventId, EventUpdateRequestDto eventUpdateRequestDto);
 }
