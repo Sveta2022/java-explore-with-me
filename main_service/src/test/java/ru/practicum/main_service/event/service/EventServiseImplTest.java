@@ -13,10 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.client.EventClient;
 import ru.practicum.main_service.category.model.CategoryEvent;
+import ru.practicum.main_service.event.dao.CommentStorage;
 import ru.practicum.main_service.event.dao.EventStorage;
-import ru.practicum.main_service.event.dto.EventFullDto;
-import ru.practicum.main_service.event.dto.EventShortDto;
-import ru.practicum.main_service.event.dto.NewEventDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventShortDto;
+import ru.practicum.main_service.event.dto.event.NewEventDto;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.exception.ConflictException;
@@ -46,6 +47,8 @@ class EventServiseImplTest {
     private EventStorage eventStorage;
     @Mock
     private UserStorage userStorage;
+    @Mock
+    private CommentStorage commentStorage;
     @Mock
     private RequestStorage requestStorage;
     @Mock

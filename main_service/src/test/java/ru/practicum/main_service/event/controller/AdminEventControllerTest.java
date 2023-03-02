@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.main_service.event.dto.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
 import ru.practicum.main_service.event.service.EventService;
 
 import java.time.LocalDateTime;

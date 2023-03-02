@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.main_service.event.dto.EventFullDto;
-import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
-import ru.practicum.main_service.event.dto.NewEventDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventUpdateRequestDto;
+import ru.practicum.main_service.event.dto.event.NewEventDto;
 import ru.practicum.main_service.event.service.EventService;
 
 import javax.validation.constraints.*;
@@ -52,4 +52,5 @@ public class AdminEventController {
         log.info("Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия");
         return eventService.getEventsByParametrs(users, states, categories, rangeStart, rangeEnd, from, size);
     }
+
 }

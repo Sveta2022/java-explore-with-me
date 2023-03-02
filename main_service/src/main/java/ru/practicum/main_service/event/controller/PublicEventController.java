@@ -2,10 +2,14 @@ package ru.practicum.main_service.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.EventClient;
-import ru.practicum.main_service.event.dto.EventFullDto;
-import ru.practicum.main_service.event.dto.EventShortDto;
+import ru.practicum.main_service.event.dto.comment.CommentDto;
+import ru.practicum.main_service.event.dto.comment.CommentFullDto;
+import ru.practicum.main_service.event.dto.comment.CommentNewDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventShortDto;
 import ru.practicum.main_service.event.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +49,33 @@ public class PublicEventController {
         log.info("Получение подробной информации об опубликованном событии по id = {}", id);
         eventClient.createEndPointHit(httpServletRequest);
         return eventService.getEventById(id);
+    }
+
+    @PostMapping("/{eventId}/comment/{userId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentFullDto addComment(@PathVariable Long eventId,
+                                     @PathVariable Long userId,
+                                     @RequestBody CommentDto commentDto) {
+        log.info("Добавление комментария к событию по id = {} пользователем с id = {}", eventId, userId);
+        return eventService.addComment(eventId, userId, commentDto);
+    }
+
+    @PatchMapping("/{eventId}/comment/{userId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentFullDto updateComment(@PathVariable Long eventId,
+                                        @PathVariable Long userId,
+                                        @RequestBody CommentNewDto commentUpdate) {
+        log.info("Обновление комментария к событию по id = {} пользователем с id = {}", eventId, userId);
+        return eventService.updateComment(eventId, userId, commentUpdate);
+    }
+
+    @DeleteMapping("/{eventId}/comment/{userId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Long eventId,
+                                 @PathVariable Long userId,
+                                 @RequestBody CommentNewDto commentDelete) {
+        log.info("Обновление комментария к событию по id = {} пользователем с id = {}", eventId, userId);
+        eventService.deleteComment(eventId, userId, commentDelete);
     }
 }
 
