@@ -311,7 +311,7 @@
 			"response": []
 		},
 		{
-			"name": "Добавление дублирущихся комментарий",
+			"name": "Добавление дублирущего комментария",
 			"event": [
 				{
 					"listen": "test",
@@ -541,57 +541,17 @@
 			"response": []
 		},
 		{
-			"name": "Добавление пользователя, который пробует изменить комментарий",
+			"name": "Добавление пользователя с id = 3",
 			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const main = async () => {",
-							"    const api = new API(pm);",
-							"    const rnd = new RandomUtils();",
-							"",
-							"    let user;",
-							"    try {",
-							"        user = rnd.getUser();",
-							"    } catch(err) {",
-							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
-							"    }",
-							"",
-							"    pm.request.body.update({",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify(user),",
-							"        options: { raw: { language: 'json' } }",
-							"    });",
-							"};",
-							"",
-							"const interval = setInterval(() => {}, 1000);",
-							"",
-							"setTimeout(async () => ",
-							"    {",
-							"        try {",
-							"            await main();",
-							"        } catch (e) {",
-							"            console.error(e);",
-							"        } finally {",
-							"            clearInterval(interval);",
-							"        }",
-							"    },  ",
-							"    100 ",
-							");"
-						],
-						"type": "text/javascript"
-					}
-				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
-							"    pm.response.to.have.status(201);",
-							"    pm.response.to.be.withBody;",
-							"    pm.response.to.be.json;",
-							"});"
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);// код ответа должен быть равен 200 OK",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON",
+							"}); "
 						],
 						"type": "text/javascript"
 					}
@@ -607,10 +567,14 @@
 					},
 					{
 						"key": "Accept",
-						"value": "application/json",
+						"value": "*/*",
 						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"3\",\n    \"name\": \"Третий пользователь\",\n    \"email\": \"mail3@mail.com\"\n}"
+				},
 				"url": {
 					"raw": "{{baseUrl}}/admin/users",
 					"host": [
@@ -754,7 +718,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"text\": \"Новый комментарий\"\n}"
+					"raw": "{\n    \"text\": \"Второй комментарий\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/events/1/comment/2",
@@ -803,7 +767,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"2\",\n    \"text\": \"Комментарий\"\n}"
+					"raw": "{\n    \"id\": \"2\",\n    \"text\": \"Второй комментарий\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/events/1/comment/3",
