@@ -183,7 +183,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"eventId\": 1,\n    \"annotation\": \"Аннотация 1 и плюс двадцать символов\",\n    \"category\": \"1\",\n    \"description\": \"Description 1 и плюс двадцать символов\",\n    \"eventDate\": \"2023-03-02 23:32:20\",\n    \"location\": {\n        \"lat\": 3.7971,\n        \"lon\": -31.9624\n    },\n    \"paid\": false,\n    \"participantLimit\": 736,\n    \"publishedOn\": null,\n    \"requestModeration\": false,\n    \"title\": \"Vitae esse pariatur quo ut.\"\n}"
+					"raw": "{\n    \"eventId\": 1,\n    \"annotation\": \"Аннотация 1 и плюс двадцать символов\",\n    \"category\": \"1\",\n    \"description\": \"Description 1 и плюс двадцать символов\",\n    \"eventDate\": \"2023-04-02 23:32:20\",\n    \"location\": {\n        \"lat\": 3.7971,\n        \"lon\": -31.9624\n    },\n    \"paid\": false,\n    \"participantLimit\": 736,\n    \"publishedOn\": null,\n    \"requestModeration\": true,\n    \"title\": \"Vitae esse pariatur quo ut.\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/users/:userId/events",
@@ -238,23 +238,17 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"eventId\": 1,\n    \"annotation\": \"Аннотация 1 и плюс двадцать символов\",\n    \"category\": \"1\",\n    \"description\": \"Description 1 и плюс двадцать символов\",\n    \"eventDate\": \"2023-03-02 23:32:20\",\n    \"location\": {\n        \"lat\": 3.7971,\n        \"lon\": -31.9624\n    },\n    \"paid\": false,\n    \"participantLimit\": 736,\n    \"publishedOn\": null,\n    \"requestModeration\": false,\n    \"title\": \"Vitae esse pariatur quo ut.\",\n    \"stateAction\": \"PUBLISH_EVENT\"\n}"
+					"raw": "{\n    \"id\": 1,\n    \"annotation\": \"Аннотация 1 и плюс двадцать символов\",\n    \"category\": 1,\n    \"description\": \"Description 1 и плюс двадцать символов\",\n    \"eventDate\": \"2023-04-02 23:32:20\",\n    \"location\": {\n        \"lat\": 3.7971,\n        \"lon\": -31.9624\n    },\n    \"paid\": false,\n    \"participantLimit\": 736,\n    \"publishedOn\": null,\n    \"requestModeration\": true,\n    \"title\": \"Vitae esse pariatur quo ut.\",\n    \"stateAction\": \"PUBLISH_EVENT\"\n}"
 				},
 				"url": {
-					"raw": "{{baseUrl}}/admin/events/:eventId",
+					"raw": "{{baseUrl}}/admin/events/1",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"admin",
 						"events",
-						":eventId"
-					],
-					"variable": [
-						{
-							"key": "eventId",
-							"value": "1"
-						}
+						"1"
 					]
 				}
 			},
