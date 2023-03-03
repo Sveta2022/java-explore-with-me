@@ -2,7 +2,6 @@ package ru.practicum.main_service.event.dto.comment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import ru.practicum.main_service.user.model.User;
 import java.time.LocalDateTime;
 
 @Getter
