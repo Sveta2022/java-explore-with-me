@@ -74,7 +74,7 @@ public class PublicEventController {
     public void deleteComment(@PathVariable Long eventId,
                                  @PathVariable Long userId,
                                  @RequestBody CommentNewDto commentDelete) {
-        log.info("Обновление комментария к событию по id = {} пользователем с id = {}", eventId, userId);
+        log.info("Удаление комментария к событию по id = {} пользователем с id = {}", eventId, userId);
         eventService.deleteComment(eventId, userId, commentDelete);
     }
 }
