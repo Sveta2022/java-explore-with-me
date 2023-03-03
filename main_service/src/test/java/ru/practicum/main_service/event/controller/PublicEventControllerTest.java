@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.client.EventClient;
-import ru.practicum.main_service.event.dto.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
 import ru.practicum.main_service.event.service.EventService;
 
 

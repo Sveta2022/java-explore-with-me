@@ -1,15 +1,17 @@
 package ru.practicum.main_service.event.mapper;
 
 import ru.practicum.main_service.category.model.CategoryEvent;
-import ru.practicum.main_service.event.dto.EventFullDto;
-import ru.practicum.main_service.event.dto.EventShortDto;
-import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
-import ru.practicum.main_service.event.dto.NewEventDto;
+import ru.practicum.main_service.event.dto.comment.CommentDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventShortDto;
+import ru.practicum.main_service.event.dto.event.EventUpdateRequestDto;
+import ru.practicum.main_service.event.dto.event.NewEventDto;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.user.model.Location;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static ru.practicum.main_service.event.Formatter.FORMATTER;
 
@@ -58,7 +60,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventFullDto eventFullDto(Event event, int confirmedRequests) {
+    public static EventFullDto eventFullDto(Event event, int confirmedRequests, List<CommentDto> comments) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -86,6 +88,7 @@ public class EventMapper {
                 .state(event.getStateEvent())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .comments(comments)
                 .build();
     }
 

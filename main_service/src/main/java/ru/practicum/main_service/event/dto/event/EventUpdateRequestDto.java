@@ -1,8 +1,9 @@
-package ru.practicum.main_service.event.dto;
+package ru.practicum.main_service.event.dto.event;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.main_service.event.dto.StateAction;
 
 import javax.validation.constraints.*;
 

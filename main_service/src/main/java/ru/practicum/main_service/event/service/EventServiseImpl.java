@@ -9,9 +9,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.EventClient;
 import ru.practicum.main_service.category.model.CategoryEvent;
+import ru.practicum.main_service.event.dao.CommentStorage;
 import ru.practicum.main_service.event.dao.EventStorage;
-import ru.practicum.main_service.event.dto.*;
+import ru.practicum.main_service.event.dto.StateAction;
+import ru.practicum.main_service.event.dto.comment.CommentDto;
+import ru.practicum.main_service.event.dto.comment.CommentFullDto;
+import ru.practicum.main_service.event.dto.comment.CommentNewDto;
+import ru.practicum.main_service.event.dto.event.*;
+import ru.practicum.main_service.event.mapper.CommentMapper;
 import ru.practicum.main_service.event.mapper.EventMapper;
+import ru.practicum.main_service.event.model.Comment;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.model.StateEvent;
 import ru.practicum.main_service.exception.ConflictException;
@@ -43,6 +50,7 @@ public class EventServiseImpl implements EventService {
     private final UserStorage userStorage;
     private final RequestStorage requestStorage;
     private final EventClient eventClient;
+    private final CommentStorage commentStorage;
 
 
     @Override
@@ -55,8 +63,8 @@ public class EventServiseImpl implements EventService {
                     "чем через два часа от текущего момента");
         }
         event.setInitiator(user);
-
-        return EventMapper.eventFullDto(eventStorage.save(event), 0);
+        EventFullDto eventFullDto = EventMapper.eventFullDto(eventStorage.save(event), 0, getCommetsDto(event.getId()));
+        return eventFullDto;
     }
 
     @Override
@@ -78,20 +86,22 @@ public class EventServiseImpl implements EventService {
         Event event = findEventbyId(eventId);  // событие в базе, которое меняем
         checkBeforeSaveNewEvent(newEventDto, event);
         return EventMapper.eventFullDto(eventStorage.save(event),
-                getCountConfirmedRequests(eventId).orElse(0));
+                getCountConfirmedRequests(eventId).orElse(0), getCommetsDto(eventId));
     }
 
 
     @Override
     public EventFullDto getEventByIdByCreator(Long userId, Long eventId) {
         EventFullDto eventFullDto = EventMapper.eventFullDto(eventStorage.findByIdAndInitiatorId(eventId, userId),
-                getCountConfirmedRequests(eventId).orElse(0));
+                getCountConfirmedRequests(eventId).orElse(0), getCommetsDto(eventId));
         return eventFullDto;
     }
 
     @Override
     @Transactional
-    public List<EventShortDto> getEventsWithFilter(String text, List<Long> categoriesId, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, int from, int size) {
+    public List<EventShortDto> getEventsWithFilter(String text, List<Long> categoriesId, Boolean paid,
+                                                   String rangeStart, String rangeEnd, Boolean onlyAvailable,
+                                                   String sort, int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size);
         String state = StateEvent.PUBLISHED.name();
         List<EventShortDto> events = eventStorage.findEvents(text, categoriesId, paid, state,
@@ -146,7 +156,8 @@ public class EventServiseImpl implements EventService {
             throw new ConflictException("Cобытие должно быть опубликовано");
         }
         getViews(id);
-        EventFullDto fullDto = EventMapper.eventFullDto(event, getCountConfirmedRequests(id).orElse(0));
+        EventFullDto fullDto = EventMapper.eventFullDto(event, getCountConfirmedRequests(id).orElse(0),
+                getCommetsDto(id));
         fullDto.setViews(getViews(id));
         return fullDto;
 
@@ -179,7 +190,7 @@ public class EventServiseImpl implements EventService {
                     break;
             }
             EventFullDto eventFullDtoReturn = EventMapper.eventFullDto(eventStorage.save(event),
-                    getCountConfirmedRequests(event.getId()).orElse(0));
+                    getCountConfirmedRequests(event.getId()).orElse(0), getCommetsDto(eventId));
             return eventFullDtoReturn;
         } else {
             throw new ConflictException("изменить можно только отмененные события или события " +
@@ -204,7 +215,8 @@ public class EventServiseImpl implements EventService {
         }
         List<Event> events = eventStorage.findEventsByAdmin(users, states, categories, start, end, pageable);
         List<EventFullDto> eventFullDtos = events.stream().map(event ->
-                EventMapper.eventFullDto(event, getCountConfirmedRequests(event.getId()).orElse(0))).collect(Collectors.toList());
+                EventMapper.eventFullDto(event, getCountConfirmedRequests(event.getId()).orElse(0),
+                        getCommetsDto(event.getId()))).collect(Collectors.toList());
         return eventFullDtos;
     }
 
@@ -314,9 +326,61 @@ public class EventServiseImpl implements EventService {
                 .equals(StateAction.REJECT_EVENT)) {
             throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано ");
         }
-        EventFullDto eventFullDto = EventMapper.eventFullDto(eventStorage.save(event), getCountConfirmedRequests(eventId).orElse(0));
+        EventFullDto eventFullDto = EventMapper.eventFullDto(eventStorage.save(event),
+                getCountConfirmedRequests(eventId).orElse(0), getCommetsDto(eventId));
 
         return eventFullDto;
+    }
+
+    @Override
+    @Transactional
+    public CommentFullDto addComment(Long eventId, Long userId, CommentDto commentDto) {
+        Event event = findEventbyId(eventId);
+        User user = findUserbyId(userId);
+
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("Автор события не может добавить комментарий");
+        }
+        if (!event.getStateEvent().equals(StateEvent.PUBLISHED)) {
+            throw new ConflictException("Событие должно быть опубликовано");
+        }
+        if (commentStorage.findByText(commentDto.getText()) != null) {
+            throw new ConflictException("У события с id " + eventId + " комментарий добавлен");
+        }
+        Comment comment = CommentMapper.toComment(commentDto);
+        comment.setEvent(event);
+        comment.setAuthor(user);
+        comment.setCreated(LocalDateTime.now());
+        return CommentMapper.commentFullDto(commentStorage.save(comment));
+    }
+
+    @Override
+    @Transactional
+    public CommentFullDto updateComment(Long eventId, Long userId, CommentNewDto commentUpdate) {
+        Event event = findEventbyId(eventId);
+        User user = findUserbyId(userId);
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("Автор события не может изменить комментарий");
+        }
+        Comment comment = commentStorage.findById(commentUpdate.getId()).orElseThrow(() ->
+                new ConflictException("Нет такого комментария"));
+        if (!comment.getAuthor().getId().equals(userId)) {
+            throw new ConflictException("Другой пользователь не может изменить комментарий");
+        }
+        comment.setText(commentUpdate.getText());
+
+        return CommentMapper.commentFullDto(commentStorage.save(comment));
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(Long eventId, Long userId, CommentNewDto commentDelete) {
+        Comment comment = commentStorage.findById(commentDelete.getId()).orElseThrow(() ->
+                new ConflictException("Нет такого комментария"));
+        if (!comment.getAuthor().getId().equals(userId)) {
+            throw new ConflictException("Другой пользователь не может изменить комментарий");
+        }
+        commentStorage.deleteById(commentDelete.getId());
     }
 
     private void checkBeforeSaveNewEvent(NewEventDto newEventDto, Event event) {
@@ -388,5 +452,15 @@ public class EventServiseImpl implements EventService {
     private Optional<Integer> getCountConfirmedRequests(Long eventId) {
         return Optional.of(requestStorage.countParticipationRequestByEventIdAndStatus(eventId,
                 RequestEventStatus.CONFIRMED));
+    }
+
+    private List<CommentDto> getCommetsDto(Long eventId) {
+
+        if (commentStorage.findAllByEventId(eventId) == null) {
+            return null;
+        }
+        return commentStorage.findAllByEventId(eventId).stream().map(CommentMapper::commentDto)
+                .collect(Collectors.toList());
+
     }
 }

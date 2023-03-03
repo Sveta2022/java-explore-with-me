@@ -1,10 +1,13 @@
 package ru.practicum.main_service.event.service;
 
 
-import ru.practicum.main_service.event.dto.EventFullDto;
-import ru.practicum.main_service.event.dto.EventShortDto;
-import ru.practicum.main_service.event.dto.EventUpdateRequestDto;
-import ru.practicum.main_service.event.dto.NewEventDto;
+import ru.practicum.main_service.event.dto.comment.CommentDto;
+import ru.practicum.main_service.event.dto.comment.CommentFullDto;
+import ru.practicum.main_service.event.dto.comment.CommentNewDto;
+import ru.practicum.main_service.event.dto.event.EventFullDto;
+import ru.practicum.main_service.event.dto.event.EventShortDto;
+import ru.practicum.main_service.event.dto.event.EventUpdateRequestDto;
+import ru.practicum.main_service.event.dto.event.NewEventDto;
 import ru.practicum.main_service.requests.dto.EventRequestStatusUpdateResult;
 import ru.practicum.main_service.requests.dto.ParticipationRequestDto;
 import ru.practicum.main_service.requests.dto.ParticipationRequestStatusUpdate;
@@ -39,4 +42,10 @@ public interface EventService {
                                                                ParticipationRequestStatusUpdate participationRequestDto);
 
     EventFullDto updateEventByAdmin(Long eventId, EventUpdateRequestDto eventUpdateRequestDto);
+
+    CommentFullDto addComment(Long eventId, Long userId, CommentDto commentDto);
+
+    CommentFullDto updateComment(Long eventId, Long userId, CommentNewDto commentUpdate);
+
+    void deleteComment(Long eventId, Long userId, CommentNewDto commentDelete);
 }
