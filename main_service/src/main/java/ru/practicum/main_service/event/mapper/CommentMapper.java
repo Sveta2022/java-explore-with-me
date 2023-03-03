@@ -21,12 +21,15 @@ public class CommentMapper {
     public static CommentFullDto commentFullDto(Comment comment) {
         return CommentFullDto.builder()
                 .id(comment.getId())
-                .author(comment.getAuthor())
+                .author(CommentFullDto.UserShortDto.builder()
+                        .id(comment.getAuthor().getId())
+                        .name(comment.getAuthor().getName())
+                        .email(comment.getAuthor().getEmail())
+                        .build())
                 .text(comment.getText())
                 .created(comment.getCreated())
                 .build();
     }
-
 
 }
 
